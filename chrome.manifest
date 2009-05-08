@@ -1,0 +1,9 @@
+content     elementfinder    chrome/content/ xpcnativewrappers=no
+content     elementfinder    chrome/content/ contentaccessible=yes
+
+overlay chrome://firebug/content/firebugOverlay.xul chrome://elementfinder/content/elementfinder-firebug.xul
+overlay chrome://browser/content/browser.xul chrome://elementfinder/content/elementfinder-browser.xul
+
+locale	elementfinder	en-US	locale/en-US/
+
+skin	elementfinder	classic/1.0	skin/

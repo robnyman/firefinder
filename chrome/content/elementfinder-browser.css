@@ -1,0 +1,4 @@
+/* Web browser window styles */
+body .elementfinder-match {
+	outline: 1px dashed #f00;
+}

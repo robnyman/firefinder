@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+         xmlns:NC="http://home.netscape.com/NC-rdf#"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="urn:mozilla:install-manifest"
+                   em:id="elementfinder@robertnyman.com"
+                   em:name="Element Finder for Firebug"
+                   em:version="0.9"
+                   em:creator="Robert Nyman"
+                   em:description="Finds HTML elements matching chosen CSS selector(s) or XPath expression"
+                   em:homepageURL="http://robertnyman.com/element-finder">
+    <em:targetApplication RDF:resource="rdf:#$NXdse3"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="rdf:#$NXdse3"
+                   em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
+                   em:minVersion="2.0"
+                   em:maxVersion="3.1b2" />
+</RDF:RDF>
