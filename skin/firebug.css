@@ -1,0 +1,54 @@
+/* Firebug styles */
+#firefinder-container {
+	width: 800px;
+	padding: 10px 20px;
+}
+
+#firefinder-container h1 {
+	margin: 0 0 10px;
+	border-bottom: 1px solid #000;
+}
+
+#firefinder-help-text {
+	font-weight: normal;
+	font-size: 10px;
+}
+
+#firefinder-field {
+	width: 70%;
+	margin-right: 10px;
+}
+
+#firefinder-container h2 {
+	margin: 20px 0 10px;
+	border-bottom: 1px solid #aaa;
+}
+
+#firefinder-results .firefinder-result-item {
+	display: block;
+	/*margin: 10px 0;*/
+	color: #008;
+	padding: 10px;
+	border-bottom: 1px solid #ccc;
+}
+
+#firefinder-results .firefinder-result-item.odd {
+	background: #eee;
+}
+
+#firefinder-results .firefinder-result-item span.node-name {
+	color: #00f;
+}
+
+#firefinder-results .firefinder-result-item span.attribute-value {
+	color: #f00;
+}
+
+#firefinder-results .firefinder-result-item .inner-code-container {
+	padding-left: 10px;
+}
+
+#firefinder-results .firefinder-result-item h1 {
+	margin: 0 0 10px;
+	border-bottom: none;
+}

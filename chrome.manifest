@@ -1,9 +1,9 @@
-content     elementfinder    chrome/content/ xpcnativewrappers=no
-content     elementfinder    chrome/content/ contentaccessible=yes
+content     firefinder    chrome/content/ xpcnativewrappers=no
+content     firefinder    chrome/content/ contentaccessible=yes
 
-overlay chrome://firebug/content/firebugOverlay.xul chrome://elementfinder/content/elementfinder-firebug.xul
-overlay chrome://browser/content/browser.xul chrome://elementfinder/content/elementfinder-browser.xul
+overlay chrome://firebug/content/firebugOverlay.xul chrome://firefinder/content/firebug.xul
+overlay chrome://browser/content/browser.xul chrome://firefinder/content/browser.xul
 
-locale	elementfinder	en-US	locale/en-US/
+locale	firefinder	en-US	locale/en-US/
 
-skin	elementfinder	classic/1.0	skin/
+skin	firefinder	classic/1.0	skin/

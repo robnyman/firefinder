@@ -1,5 +1,5 @@
-pref("extensions.firebug.elementfinder.autorun", false);
-pref("extensions.firebug.elementfinder.inlineEvents", true);
-pref("extensions.firebug.elementfinder.inlineStyle", true);
-pref("extensions.firebug.elementfinder.javascriptLinks", true);
-pref("extensions.firebug.elementfinder.highlightAllEvents", true);
+pref("extensions.firebug.firefinder.autorun", false);
+pref("extensions.firebug.firefinder.inlineEvents", true);
+pref("extensions.firebug.firefinder.inlineStyle", true);
+pref("extensions.firebug.firefinder.javascriptLinks", true);
+pref("extensions.firebug.firefinder.highlightAllEvents", true);

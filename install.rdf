@@ -3,8 +3,8 @@
          xmlns:NC="http://home.netscape.com/NC-rdf#"
          xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
-                   em:id="elementfinder@robertnyman.com"
-                   em:name="Element Finder for Firebug"
+                   em:id="firefinder@robertnyman.com"
+                   em:name="Firefinder for Firebug"
                    em:version="0.9"
                    em:creator="Robert Nyman"
                    em:description="Finds HTML elements matching chosen CSS selector(s) or XPath expression"

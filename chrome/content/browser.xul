@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://firefinder/skin/firefinder.css" type="text/css"?> 
+<!DOCTYPE window SYSTEM "chrome://firefinder/locale/firefinder.dtd">
+<overlay id="sample" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+		
+		<menupopup id="menu_ToolsPopup"> 
+			<menuitem id="run-firefinder" label="Show Firefinder for Firebug" key="firefinder-run-key" oncommand="Firebug.firefinderModel.show(FirebugContext)"/> 
+		</menupopup>
+		
+		<keyset>
+			<key id="firefinder-run-key" modifiers="accel shift" key="V" oncommand="Firebug.firefinderModel.show(FirebugContext)"/>
+		</keyset>
+		
+</overlay>

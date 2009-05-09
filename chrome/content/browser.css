@@ -1,0 +1,8 @@
+/* Web browser window styles */
+body .firefinder-match {
+	outline: 2px dashed #f00;
+}
+
+body .firefinder-match-hover {
+	outline: 4px dashed #00f;
+}
