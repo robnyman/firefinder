@@ -24,16 +24,35 @@
 	border-bottom: 1px solid #aaa;
 }
 
+#firefinder-results-container.initial-view {
+	display: none;
+}
+
+#firefinder-results-container.initial-view {
+	display: none;
+}
+
 #firefinder-results .firefinder-result-item {
 	display: block;
-	/*margin: 10px 0;*/
+	cursor: pointer;
 	color: #008;
-	padding: 10px;
+	background: url(chrome://firefinder/skin/expanded.png) no-repeat 10px 14px;
+	padding: 10px 10px 10px 25px;
 	border-bottom: 1px solid #ccc;
 }
 
+#firefinder-results .firefinder-result-item.collapsed {
+	background-image: url(chrome://firefinder/skin/collapsed.png);
+	background-position: 10px 12px;
+}
+
+#firefinder-results .firefinder-result-item.collapsed .inner-code-container,
+#firefinder-results .firefinder-result-item.collapsed .end-tag {
+	display: none;
+}
+
 #firefinder-results .firefinder-result-item.odd {
-	background: #eee;
+	background-color: #eee;
 }
 
 #firefinder-results .firefinder-result-item span.node-name {
@@ -45,6 +64,7 @@
 }
 
 #firefinder-results .firefinder-result-item .inner-code-container {
+	cursor: auto;
 	padding-left: 10px;
 }
 

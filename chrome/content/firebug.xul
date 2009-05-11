@@ -7,7 +7,7 @@
 		<script type="application/x-javascript" src="firebug.js" />
 		
 		<commandset id="mainCommandSet">
-			<command id="cmd_firefinderClearButton" key="firefinder-clear-key" oncommand="Firebug.firefinderModel.onClear(FirebugContext)"/>
+			<command id="cmd_firefinderClearButton" key="firefinder-clear-key" oncommand="Firebug.firefinderModel.clear(FirebugContext)"/>
 			<command id="cmd_firefinderHideButton" key="firefinder-hide-key" oncommand="Firebug.firefinderModel.hide(FirebugContext)"/>
 	    </commandset>
 

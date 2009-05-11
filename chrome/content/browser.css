@@ -1,8 +1,10 @@
 /* Web browser window styles */
+/* Match class */
 body .firefinder-match {
 	outline: 2px dashed #f00;
 }
 
+/* Match hover class */
 body .firefinder-match-hover {
 	outline: 4px dashed #00f;
 }

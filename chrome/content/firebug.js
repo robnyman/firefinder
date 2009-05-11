@@ -2,9 +2,12 @@
 FBL.ns(function () {
 	with (FBL) {
 		var panelName = "firefinder",
-			regExpClass = /firefinder\-match/,
+			regExpClass = /firefinder\-match(\-hover)?/g,
 			regExpHoverClass = /firefinder\-match\-hover/,
+			regExpInitialViewClass = /initial-view/,
+			regExpCollapsedClass = /collapsed/,
 			regExpSpaceFix = /^\s+|\s+$/g,
+			regExpInnerCodeClass = /inner-code-container/g,
 			regExpSlashEscape = /\//g,
 			regExpCharacters = /["<>\r\n\t]/g,
 			regExpSingleCloseElements = /img|input/,
@@ -111,7 +114,8 @@ FBL.ns(function () {
 							),
 							DIV(
 								{
-									id : "firefinder-results-container"
+									id : "firefinder-results-container",
+									class : "initial-view"
 								},
 								H2({
 										id : "firefinder-results-header"
@@ -142,10 +146,12 @@ FBL.ns(function () {
 		   	run : function (context, XPath) {
 				var panel = context.getPanel(panelName),
 					panelNode = panel.panelNode,
-					findInlineEvents = Firebug.getPref(Firebug.prefDomain, "firefinder.inlineEvents"),
+					collapseMatchesList = Firebug.getPref(Firebug.prefDomain, "firefinder.collapseMatchesList"),
 					inputField = Sizzle("#firefinder-field", panelNode)[0],
+					resultsContainer = Sizzle("#firefinder-results-container", panelNode)[0],
 					results = Sizzle("#firefinder-results", panelNode)[0],
 					resultsHeader = Sizzle("#firefinder-results-header", panelNode)[0],
+					firefinderResultItems,
 					
 					// JavaScript and CSS to add to the web browser content
 					scriptApplied = content.document.getElementById("element-finder-selector"),
@@ -158,24 +164,11 @@ FBL.ns(function () {
 						// CSS/XPath to filter by
 						var filterExpression = inputField.value,
 							resultItem = "",
-							state = getState(),
+							state = Firebug.firefinderModel.clear(context),
 							matchingElements,
 							
 							// Sizzle reference
-							sizzle = content.wrappedJSObject.Sizzle;
-						
-						if (!state) {
-							state = states[getTabIndex()] = {
-								matchingElements : []
-							};
-						}
-						matchingElements = state.matchingElements;						
-						
-						// Clear previosuly matched elements' CSS classes	
-						for (var i=0, il=matchingElements.length, elm; i<il; i++) {
-							elm = matchingElements[i];
-							elm.className = elm.className.replace(regExpClass, "").replace(regExpSpaceFix, "");
-						}
+							sizzleDoc = content.wrappedJSObject.Sizzle;
 						
 						// Find matching elements
 						if (XPath) {
@@ -186,7 +179,7 @@ FBL.ns(function () {
 							}
 						}
 						else {
-							matchingElements = sizzle(filterExpression.replace(regExpSlashEscape, "\\\/"));
+							matchingElements = sizzleDoc(filterExpression.replace(regExpSlashEscape, "\\\/"));
 						}
 						
 						// Add class to matching elements and clone them to the results container
@@ -209,7 +202,7 @@ FBL.ns(function () {
 								resultItem += "<div class='inner-code-container'>" + elm.textContent.replace(regExpCharacters, matchReplace) + "</div>";
 								}
 								if (!regExpSingleCloseElements.test(nodeNameValue)) {
-									resultItem += "&lt;/" + nodeNameCode + "&gt;";
+									resultItem += "<div class='end-tag'>&lt;/" + nodeNameCode + "&gt;</div>";
 								}
 								resultItem += "</div>";
 								
@@ -225,21 +218,36 @@ FBL.ns(function () {
 						// Set results content
 						results.innerHTML = resultItem;
 						
-						var divs = results.getElementsByTagName("div");
-						for (var l=0, ll=divs.length, matchingElm; l<ll; l++) {
-							elm = divs[l];
+						firefinderResultItems = Sizzle(".firefinder-result-item", results);
+						for (var l=0, ll=firefinderResultItems.length, matchingElm; l<ll; l++) {
+							elm = firefinderResultItems[l];
 							if (elm.getAttribute("ref")) {
-								elm.addEventListener("mouseover",  function () {
+								elm.addEventListener("mouseover", function (evt) {
 									state.matchingElements[this.getAttribute("ref")].className += " firefinder-match-hover";
 								}, false);
 							
-								elm.addEventListener("mouseout",  function () {
+								elm.addEventListener("mouseout", function (evt) {
 									matchingElm = state.matchingElements[this.getAttribute("ref")];
 									matchingElm.className = matchingElm.className.replace(regExpHoverClass, "").replace(regExpSpaceFix, "");
 								}, false);
+								
+								elm.addEventListener("click", function (evt) {
+									if (!regExpInnerCodeClass.test(evt.target.className)) {
+										if (regExpCollapsedClass.test(this.className)) {
+											this.className = this.className.replace(regExpCollapsedClass, "").replace(regExpSpaceFix, "");
+										}
+										else {
+											this.className += " collapsed";
+										}
+									}
+								}, false);
+							}
+							if (collapseMatchesList) {
+								elm.className += " collapsed";
 							}	
 						}
 						resultsHeader.innerHTML = "Matching elements: " + matchingElements.length;
+						resultsContainer.className = resultsContainer.className.replace(regExpInitialViewClass, "").replace(regExpSpaceFix, "");
 					};
 										
 					if (!scriptApplied) {
@@ -267,13 +275,40 @@ FBL.ns(function () {
 				var panel = context.getPanel(panelName);
 				Firebug.toggleBar(true, panelName);
 				var inputField = Sizzle("#firefinder-field", panel.panelNode)[0];
-				inputField.focus();
 				inputField.select();
+				inputField.focus();
 			},
 		
 			hide : function (context) {
 				Firebug.toggleBar(false, panelName);
-		    }
+		    },
+		
+			clear : function (context) {
+				var panel = context.getPanel(panelName),
+					panelNode = panel.panelNode,
+					state = getState(),
+					resultsContainer = Sizzle("#firefinder-results-container", panelNode)[0],
+					matchingElements;
+					
+				resultsContainer.className = "initial-view";	
+					
+				if (!state) {
+					state = states[getTabIndex()] = {
+						matchingElements : []
+					};
+				}
+				matchingElements = state.matchingElements;
+				
+				// Clear previosuly matched elements' CSS classes	
+				for (var i=0, il=matchingElements.length, elm; i<il; i++) {
+					elm = matchingElements[i];
+					elm.className = elm.className.replace(regExpClass, "").replace(regExpSpaceFix, "");
+					if (elm.className.length === 0) {
+						elm.removeAttribute("class");
+					}
+				}				
+				return state;		
+			}
 		});
 			
 		
@@ -291,11 +326,7 @@ FBL.ns(function () {
 			
 			getOptionsMenuItems : function () {
 				return [
-					this.optionsMenuItem("Autorun", "firefinder.autorun"),
-					this.optionsMenuItem("Inline JavaScript Events", "firefinder.inlineEvents"),
-					this.optionsMenuItem("Inline Style", "firefinder.inlineStyle"),
-					this.optionsMenuItem("javascript: links", "firefinder.javascriptLinks"),
-					this.optionsMenuItem("Highlight all events", "firefinder.highlightAllEvents")
+					this.optionsMenuItem("Collapse matching results", "firefinder.collapseMatchesList")
 				];
 			},
 			
