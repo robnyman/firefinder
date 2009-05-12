@@ -5,7 +5,9 @@
 }
 
 #firefinder-container h1 {
+	background: url(chrome://firefinder/skin/logo.png) no-repeat 0 -6px;
 	margin: 0 0 10px;
+	padding-left: 36px;
 	border-bottom: 1px solid #000;
 }
 

@@ -1,1 +1,1 @@
-pref("extensions.firebug.firefinder.collapseMatchesList", false);
+pref("extensions.firebug.firefinder.collapseMatchesList", true);

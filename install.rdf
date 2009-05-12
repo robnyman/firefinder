@@ -8,11 +8,13 @@
                    em:version="0.9"
                    em:creator="Robert Nyman"
                    em:description="Finds HTML elements matching chosen CSS selector(s) or XPath expression"
-                   em:homepageURL="http://robertnyman.com/element-finder">
+                   em:homepageURL="http://robertnyman.com/firefinder/"
+                   em:iconURL="chrome://firefinder/skin/logo.png"
+				>
     <em:targetApplication RDF:resource="rdf:#$NXdse3"/>
   </RDF:Description>
   <RDF:Description RDF:about="rdf:#$NXdse3"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
-                   em:minVersion="2.0"
-                   em:maxVersion="3.1b2" />
+                   em:minVersion="3.0"
+                   em:maxVersion="3.0.*" />
 </RDF:RDF>

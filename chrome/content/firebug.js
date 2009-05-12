@@ -7,7 +7,7 @@ FBL.ns(function () {
 			regExpInitialViewClass = /initial-view/,
 			regExpCollapsedClass = /collapsed/,
 			regExpSpaceFix = /^\s+|\s+$/g,
-			regExpInnerCodeClass = /inner-code-container/g,
+			regExpInnerCodeClass = /inner\-code\-container/,
 			regExpSlashEscape = /\//g,
 			regExpCharacters = /["<>\r\n\t]/g,
 			regExpSingleCloseElements = /img|input/,
@@ -154,7 +154,7 @@ FBL.ns(function () {
 					firefinderResultItems,
 					
 					// JavaScript and CSS to add to the web browser content
-					scriptApplied = content.document.getElementById("element-finder-selector"),
+					scriptApplied = content.document.getElementById("firefinder-selector"),
 					head,
 					script,
 					css,
@@ -254,7 +254,7 @@ FBL.ns(function () {
 						head = content.document.getElementsByTagName("head")[0];
 						
 						script = content.document.createElement("script").wrappedJSObject;
-						script.id = "element-finder-selector";
+						script.id = "firefinder-selector";
 						script.src = "chrome://firefinder/content/sizzle.js";
 						script.type = "text/javascript";
 						script.onload = parse;
