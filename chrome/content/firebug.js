@@ -81,7 +81,7 @@ FBL.ns(function () {
 									},
 									INPUT(
 										{
-											id : "firefinder-field",
+											class : "firefinder-field",
 											type : "text",
 											onkeypress : function (evt) {
 												if (evt.keyCode === 13) {
@@ -114,17 +114,16 @@ FBL.ns(function () {
 							),
 							DIV(
 								{
-									id : "firefinder-results-container",
-									class : "initial-view"
+									class : "firefinder-results-container initial-view"
 								},
 								H2({
-										id : "firefinder-results-header"
+										class : "firefinder-results-header"
 									},
 									"Matching elements"
 								),
 								DIV(
 									{
-										id : "firefinder-results"
+										class : "firefinder-results"
 									},
 									"No matches"
 								)
@@ -147,10 +146,10 @@ FBL.ns(function () {
 				var panel = context.getPanel(panelName),
 					panelNode = panel.panelNode,
 					collapseMatchesList = Firebug.getPref(Firebug.prefDomain, "firefinder.collapseMatchesList"),
-					inputField = Sizzle("#firefinder-field", panelNode)[0],
-					resultsContainer = Sizzle("#firefinder-results-container", panelNode)[0],
-					results = Sizzle("#firefinder-results", panelNode)[0],
-					resultsHeader = Sizzle("#firefinder-results-header", panelNode)[0],
+					inputField = dLite.elmsByClass("firefinder-field", "input", panelNode)[0],
+					resultsContainer = dLite.elmsByClass("firefinder-results-container", "div", panelNode)[0],
+					results = dLite.elmsByClass("firefinder-results", "div", panelNode)[0],
+					resultsHeader = dLite.elmsByClass("firefinder-results-header", "h2", panelNode)[0],
 					firefinderResultItems,
 					
 					// JavaScript and CSS to add to the web browser content
@@ -218,7 +217,7 @@ FBL.ns(function () {
 						// Set results content
 						results.innerHTML = resultItem;
 						
-						firefinderResultItems = Sizzle(".firefinder-result-item", results);
+						firefinderResultItems = dLite.elmsByClass("firefinder-result-item", "div", results);
 						for (var l=0, ll=firefinderResultItems.length, matchingElm; l<ll; l++) {
 							elm = firefinderResultItems[l];
 							if (elm.getAttribute("ref")) {
@@ -272,11 +271,13 @@ FBL.ns(function () {
 		    },
 		
 			show : function (context) {
-				var panel = context.getPanel(panelName);
-				Firebug.toggleBar(true, panelName);
-				var inputField = Sizzle("#firefinder-field", panel.panelNode)[0];
-				inputField.select();
-				inputField.focus();
+				if (context) {
+					var panel = context.getPanel(panelName);
+					Firebug.toggleBar(true, panelName);
+					var inputField = dLite.elmsByClass("firefinder-field", "input", panel.panelNode)[0];
+					inputField.select();
+					inputField.focus();
+				}	
 			},
 		
 			hide : function (context) {
@@ -287,10 +288,10 @@ FBL.ns(function () {
 				var panel = context.getPanel(panelName),
 					panelNode = panel.panelNode,
 					state = getState(),
-					resultsContainer = Sizzle("#firefinder-results-container", panelNode)[0],
+					resultsContainer = dLite.elmsByClass("firefinder-results-container", "div", panelNode)[0],
 					matchingElements;
 					
-				resultsContainer.className = "initial-view";	
+				resultsContainer.className = "firefinder-results-container initial-view";	
 					
 				if (!state) {
 					state = states[getTabIndex()] = {

@@ -3,7 +3,7 @@
 <!DOCTYPE window SYSTEM "chrome://firefinder/locale/firefinder.dtd">
 <overlay id="sample" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	
-		<script type="application/x-javascript" src="sizzle.js" />
+		<script type="application/x-javascript" src="dLite.js" />
 		<script type="application/x-javascript" src="firebug.js" />
 		
 		<commandset id="mainCommandSet">
