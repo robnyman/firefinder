@@ -27,7 +27,7 @@ FBL.ns(function () {
 			inputField = null;
 			results = null;
 			resultsHeader = null;
-			states = {
+			statesFirefinder = {
 			},
 			getTabIndex = function () {
 				var browsers = gBrowser.browsers,
@@ -40,9 +40,9 @@ FBL.ns(function () {
 				}
 				return tabIndex;
 			},
-			getState = function () {
+			getFirefinderState = function () {
 				var tabIndex = this.getTabIndex(),
-					state = states[tabIndex];
+					state = statesFirefinder[tabIndex];
 				return state;	
 			};
 		
@@ -287,14 +287,14 @@ FBL.ns(function () {
 			clear : function (context) {
 				var panel = context.getPanel(panelName),
 					panelNode = panel.panelNode,
-					state = getState(),
+					state = getFirefinderState(),
 					resultsContainer = dLite.elmsByClass("firefinder-results-container", "div", panelNode)[0],
 					matchingElements;
 					
 				resultsContainer.className = "firefinder-results-container initial-view";	
 					
 				if (!state) {
-					state = states[getTabIndex()] = {
+					state = statesFirefinder[getTabIndex()] = {
 						matchingElements : []
 					};
 				}
