@@ -4,8 +4,9 @@ FBL.ns(function () {
 		var panelName = "firefinder",
 			regExpClass = /firefinder\-match(\-hover)?/g,
 			regExpHoverClass = /firefinder\-match\-hover/,
-			regExpInitialViewClass = /initial-view/,
+			regExpInitialViewClass = /initial\-view/,
 			regExpCollapsedClass = /collapsed/,
+			regExpFriendlyFireClass = /firefinder\-friendly\-fire\-this/,
 			regExpSpaceFix = /^\s+|\s+$/g,
 			regExpInnerCodeClass = /inner\-code\-container/,
 			regExpSlashEscape = /\//g,
@@ -186,10 +187,13 @@ FBL.ns(function () {
 							for (var j=0, jl=matchingElements.length, elm, nodeNameValue, nodeNameCode, k, attr; j<jl; j++) {
 								elm = matchingElements[j];
 								nodeNameValue = elm.nodeName.toLowerCase();
+								//nodeNameAttributes = "";
 								nodeNameCode = "<span class='node-name'>" + nodeNameValue + "</span>";
 								
 								resultItem += "<div class='firefinder-result-item" + ((j % 2 === 0)? " odd" : "") + "'";
-								resultItem += " ref=" + j + ">";
+								resultItem += " ref='" + j + "'";
+								resultItem += " code=" + elm + ">";
+								resultItem += "<div class='firefinder-friendly-fire-this'>FriendlyFire</div>";
 								resultItem += "&lt" + nodeNameCode;
 								for (k=0, kl=elm.attributes.length; k<kl; k++) {
 									attr = elm.attributes[k];
@@ -231,7 +235,31 @@ FBL.ns(function () {
 								}, false);
 								
 								elm.addEventListener("click", function (evt) {
-									if (!regExpInnerCodeClass.test(evt.target.className)) {
+									if (regExpFriendlyFireClass.test(evt.target.className)) {
+										alert(this.getAttribute("code"));
+										
+										var XMLHttp = new XMLHttpRequest();
+										XMLHttp.open("POST", "http://jsbin.com/save", true);
+
+										// These two are vital
+										XMLHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+										XMLHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+										// This line doesn't seem to matter, although it should state number of sent params below in the send method
+										XMLHttp.setRequestHeader("Content-length", 1);
+
+										// This line seems superfluous
+										XMLHttp.setRequestHeader("Connection", "close");
+
+										XMLHttp.onreadystatechange = function () {
+											if (XMLHttp.readyState === 4) {
+												var response = XMLHttp.responseText;
+												alert(response);
+											}
+										};
+										XMLHttp.send("html=" + encodeURIComponent("<div>" + inputField.value + "</div>"));
+									}
+									else if (!regExpInnerCodeClass.test(evt.target.className)) {
 										if (regExpCollapsedClass.test(this.className)) {
 											this.className = this.className.replace(regExpCollapsedClass, "").replace(regExpSpaceFix, "");
 										}
@@ -248,7 +276,7 @@ FBL.ns(function () {
 						resultsHeader.innerHTML = "Matching elements: " + matchingElements.length;
 						resultsContainer.className = resultsContainer.className.replace(regExpInitialViewClass, "").replace(regExpSpaceFix, "");
 					};
-										
+															
 					if (!scriptApplied) {
 						head = content.document.getElementsByTagName("head")[0];
 						
@@ -271,8 +299,10 @@ FBL.ns(function () {
 		    },
 		
 			show : function (context) {
-				if (context) {
-					var panel = context.getPanel(panelName);
+				Firebug.toggleBar(true);
+				Firebug.toggleBar(true, panelName);
+				if (FirebugContext) {
+					var panel = FirebugContext.getPanel(panelName);
 					Firebug.toggleBar(true, panelName);
 					var inputField = dLite.elmsByClass("firefinder-field", "input", panel.panelNode)[0];
 					inputField.select();
