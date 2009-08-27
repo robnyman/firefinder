@@ -48,6 +48,22 @@
 	background-position: 10px 12px;
 }
 
+.firefinder-results .firefinder-result-item .firefinder-inspect-element {
+	float: right;
+	margin: 0 10px 10px 0;
+	padding-left: 10px;
+	border-left: 1px solid #008;
+}
+
+.firefinder-results .firefinder-result-item .firefinder-friendly-fire-this {
+	float: right;
+	margin: 0 10px 10px;
+}
+
+.firefinder-results .firefinder-result-item .firefinder-friendly-fire-fired {
+	color: #00f;
+}
+
 .firefinder-results .firefinder-result-item.collapsed .inner-code-container,
 .firefinder-results .firefinder-result-item.collapsed .end-tag {
 	display: none;

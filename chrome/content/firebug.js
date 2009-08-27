@@ -2,11 +2,13 @@
 FBL.ns(function () {
 	with (FBL) {
 		var panelName = "firefinder",
-			regExpClass = /firefinder\-match(\-hover)?/g,
+			regExpClass = /\s?firefinder\-match(\-hover)?/g,
 			regExpHoverClass = /firefinder\-match\-hover/,
 			regExpInitialViewClass = /initial\-view/,
 			regExpCollapsedClass = /collapsed/,
+			regExpInspectElementClass = /firefinder\-inspect\-element/,
 			regExpFriendlyFireClass = /firefinder\-friendly\-fire\-this/,
+			regExpFriendlyFireFiredClass = /firefinder\-friendly\-fire\-fired/,
 			regExpSpaceFix = /^\s+|\s+$/g,
 			regExpInnerCodeClass = /inner\-code\-container/,
 			regExpSlashEscape = /\//g,
@@ -187,12 +189,11 @@ FBL.ns(function () {
 							for (var j=0, jl=matchingElements.length, elm, nodeNameValue, nodeNameCode, k, attr; j<jl; j++) {
 								elm = matchingElements[j];
 								nodeNameValue = elm.nodeName.toLowerCase();
-								//nodeNameAttributes = "";
 								nodeNameCode = "<span class='node-name'>" + nodeNameValue + "</span>";
 								
 								resultItem += "<div class='firefinder-result-item" + ((j % 2 === 0)? " odd" : "") + "'";
-								resultItem += " ref='" + j + "'";
-								resultItem += " code=" + elm + ">";
+								resultItem += " ref='" + j + "'>";
+								resultItem += "<div class='firefinder-inspect-element'>Inspect</div>";
 								resultItem += "<div class='firefinder-friendly-fire-this'>FriendlyFire</div>";
 								resultItem += "&lt" + nodeNameCode;
 								for (k=0, kl=elm.attributes.length; k<kl; k++) {
@@ -235,29 +236,50 @@ FBL.ns(function () {
 								}, false);
 								
 								elm.addEventListener("click", function (evt) {
-									if (regExpFriendlyFireClass.test(evt.target.className)) {
-										alert(this.getAttribute("code"));
+									if (regExpInspectElementClass.test(evt.target.className)) {
+										matchingElm = state.matchingElements[this.getAttribute("ref")];
+										matchingElm.className = matchingElm.className.replace(regExpClass, "").replace(regExpSpaceFix, "");
+										Firebug.toggleBar(true, "html");
+										FirebugChrome.select(matchingElm, "html");
+									}
+									else if (regExpFriendlyFireClass.test(evt.target.className)) {
+										if (regExpFriendlyFireFiredClass.test(evt.target.className)) {
+											gBrowser.selectedTab = gBrowser.addTab(evt.target.textContent);
+										}
+										else {
+											matchingElm = state.matchingElements[this.getAttribute("ref")];
+											var matchingElmInList = evt.target,
+												nodeName = matchingElm.nodeName.toLowerCase(),
+												nodeCode = '<',
+												nodeAttributes = "";
+											for (m=0, ml=matchingElm.attributes.length; m<ml; m++) {
+												attr = matchingElm.attributes[m];
+												nodeAttributes += " " + attr.name + '="' + attr.value + '"';
+											};	
+											nodeCode += nodeName + nodeAttributes + '>' + matchingElm.innerHTML + '</' + nodeName + '>';
 										
-										var XMLHttp = new XMLHttpRequest();
-										XMLHttp.open("POST", "http://jsbin.com/save", true);
+											var XMLHttp = new XMLHttpRequest();
+											XMLHttp.open("POST", "http://jsbin.com/save", true);
 
-										// These two are vital
-										XMLHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-										XMLHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+											// These two are vital
+											XMLHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+											XMLHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-										// This line doesn't seem to matter, although it should state number of sent params below in the send method
-										XMLHttp.setRequestHeader("Content-length", 1);
+											// This line doesn't seem to matter, although it should state number of sent params below in the send method
+											XMLHttp.setRequestHeader("Content-length", 1);
 
-										// This line seems superfluous
-										XMLHttp.setRequestHeader("Connection", "close");
+											// This line seems superfluous
+											XMLHttp.setRequestHeader("Connection", "close");
 
-										XMLHttp.onreadystatechange = function () {
-											if (XMLHttp.readyState === 4) {
-												var response = XMLHttp.responseText;
-												alert(response);
-											}
-										};
-										XMLHttp.send("html=" + encodeURIComponent("<div>" + inputField.value + "</div>"));
+											XMLHttp.onreadystatechange = function () {
+												if (XMLHttp.readyState === 4) {
+													var response = XMLHttp.responseText;
+													matchingElmInList.className += " firefinder-friendly-fire-fired";
+													matchingElmInList.innerHTML = response;
+												}
+											};
+											XMLHttp.send("html=" + encodeURIComponent(nodeCode.replace(regExpClass, "").replace(regExpSpaceFix, "")));
+										}
 									}
 									else if (!regExpInnerCodeClass.test(evt.target.className)) {
 										if (regExpCollapsedClass.test(this.className)) {
@@ -299,11 +321,11 @@ FBL.ns(function () {
 		    },
 		
 			show : function (context) {
+				// Forces Firebug to be shown, even if it's off
 				Firebug.toggleBar(true);
 				Firebug.toggleBar(true, panelName);
 				if (FirebugContext) {
 					var panel = FirebugContext.getPanel(panelName);
-					Firebug.toggleBar(true, panelName);
 					var inputField = dLite.elmsByClass("firefinder-field", "input", panel.panelNode)[0];
 					inputField.select();
 					inputField.focus();
