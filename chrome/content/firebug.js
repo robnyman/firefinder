@@ -8,7 +8,8 @@ FBL.ns(function () {
 			regExpCollapsedClass = /collapsed/,
 			regExpInspectElementClass = /firefinder\-inspect\-element/,
 			regExpFriendlyFireClass = /firefinder\-friendly\-fire\-this/,
-			regExpFriendlyFireFiredClass = /firefinder\-friendly\-fire\-fired/,
+			regExpFriendlyFireURLClass = /firefinder\-friendly\-fire\-url/,
+			regExpFriendlyFireCopyURLClass = /firefinder\-friendly\-fire\-copy\-url/,
 			regExpSpaceFix = /^\s+|\s+$/g,
 			regExpInnerCodeClass = /inner\-code\-container/,
 			regExpSlashEscape = /\//g,
@@ -236,50 +237,106 @@ FBL.ns(function () {
 								}, false);
 								
 								elm.addEventListener("click", function (evt) {
-									if (regExpInspectElementClass.test(evt.target.className)) {
+									var targetClassName = evt.target.className;
+									if (regExpInspectElementClass.test(targetClassName)) {
 										matchingElm = state.matchingElements[this.getAttribute("ref")];
 										matchingElm.className = matchingElm.className.replace(regExpClass, "").replace(regExpSpaceFix, "");
 										Firebug.toggleBar(true, "html");
 										FirebugChrome.select(matchingElm, "html");
 									}
-									else if (regExpFriendlyFireClass.test(evt.target.className)) {
-										if (regExpFriendlyFireFiredClass.test(evt.target.className)) {
-											gBrowser.selectedTab = gBrowser.addTab(evt.target.textContent);
+									else if (regExpFriendlyFireURLClass.test(targetClassName)) {
+										gBrowser.selectedTab = gBrowser.addTab(evt.target.textContent);
+									}
+									else if (regExpFriendlyFireCopyURLClass.test(targetClassName)) {
+										// Copy to clipboard code taken from/inspired by https://developer.mozilla.org/en/Using_the_Clipboard
+										var friendlyFireURL = evt.target.getAttribute("url"),
+											textUnicode = friendlyFireURL,
+											textHtml = ("<a href=\"" + friendlyFireURL + "\">" + friendlyFireURL + "</a>"),
+											str = Components.classes["@mozilla.org/supports-string;1"].												                       createInstance(Components.interfaces.nsISupportsString);  
+										if (!str) {
+											alert("Copying failed");
+											return false;
 										}
-										else {
-											matchingElm = state.matchingElements[this.getAttribute("ref")];
-											var matchingElmInList = evt.target,
-												nodeName = matchingElm.nodeName.toLowerCase(),
-												nodeCode = '<',
-												nodeAttributes = "";
-											for (m=0, ml=matchingElm.attributes.length; m<ml; m++) {
-												attr = matchingElm.attributes[m];
-												nodeAttributes += " " + attr.name + '="' + attr.value + '"';
-											};	
-											nodeCode += nodeName + nodeAttributes + '>' + matchingElm.innerHTML + '</' + nodeName + '>';
+										str.data = textUnicode;
+
+										var htmlstring = Components.classes["@mozilla.org/supports-string;1"].												                       createInstance(Components.interfaces.nsISupportsString);  
+										if (!htmlstring) {
+											alert("Copying failed");
+											return false;
+										}
+										htmlstring.data = textHtml;
 										
-											var XMLHttp = new XMLHttpRequest();
-											XMLHttp.open("POST", "http://jsbin.com/save", true);
-
-											// These two are vital
-											XMLHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-											XMLHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-											// This line doesn't seem to matter, although it should state number of sent params below in the send method
-											XMLHttp.setRequestHeader("Content-length", 1);
-
-											// This line seems superfluous
-											XMLHttp.setRequestHeader("Connection", "close");
-
-											XMLHttp.onreadystatechange = function () {
-												if (XMLHttp.readyState === 4) {
-													var response = XMLHttp.responseText;
-													matchingElmInList.className += " firefinder-friendly-fire-fired";
-													matchingElmInList.innerHTML = response;
-												}
-											};
-											XMLHttp.send("html=" + encodeURIComponent(nodeCode.replace(regExpClass, "").replace(regExpSpaceFix, "")));
+										var trans = Components.classes["@mozilla.org/widget/transferable;1"].createInstance(Components.interfaces.nsITransferable);  
+										if (!trans) {
+											alert("Copying failed");
+											return false;
 										}
+
+										trans.addDataFlavor("text/unicode");  
+										trans.setTransferData("text/unicode", str, textUnicode.length * 2); // *2 because it's unicode  
+
+										trans.addDataFlavor("text/html");  
+										trans.setTransferData("text/html", htmlstring, textHtml.length * 2); // *2 because it's unicode   
+
+										var clipboard = Components.classes["@mozilla.org/widget/clipboard;1"].												                       getService(Components.interfaces.nsIClipboard);  
+										if (!clipboard) {
+											alert("Copying failed");
+											return false;
+										}
+
+										clipboard.setData(trans, null, Components.interfaces.nsIClipboard.kGlobalClipboard);  
+										return true;
+									}
+									else if (regExpFriendlyFireClass.test(targetClassName)) {
+										matchingElm = state.matchingElements[this.getAttribute("ref")];
+										var matchingElmInList = evt.target,
+											nodeName = matchingElm.nodeName.toLowerCase(),
+											nodeCode = '<',
+											nodeAttributes = "";
+										for (m=0, ml=matchingElm.attributes.length; m<ml; m++) {
+											attr = matchingElm.attributes[m];
+											nodeAttributes += " " + attr.name + '="' + attr.value + '"';
+										};	
+										nodeCode += nodeName + nodeAttributes + '>' + matchingElm.innerHTML + '</' + nodeName + '>';
+									
+										var XMLHttp = new XMLHttpRequest(),
+											failedText = "Failed. Click to try again",
+											requestTimer;
+										XMLHttp.open("POST", "http://jsbin.com/save", true);
+
+										// These two are vital
+										XMLHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+										XMLHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+										// This line doesn't seem to matter, although it should state number of sent params below in the send method
+										XMLHttp.setRequestHeader("Content-length", 2);
+
+										// This line seems superfluous
+										XMLHttp.setRequestHeader("Connection", "close");
+
+										XMLHttp.onreadystatechange = function () {
+											if (XMLHttp.readyState === 4) {
+												clearTimeout(requestTimer);
+												if (XMLHttp.status === 200) {
+													var response = XMLHttp.responseText + "/edit#html";
+													matchingElmInList.className += " firefinder-friendly-fire-fired";
+													matchingElmInList.innerHTML = '<span class="firefinder-friendly-fire-url">' + response + '</span>(<span class="firefinder-friendly-fire-copy-url" url="' + response + '">Copy</span>)';
+												}
+												else {
+													matchingElmInList.innerHTML = failedText;
+												}
+											}
+										};
+										XMLHttp.onerror = function () {
+											matchingElmInList.innerHTML = failedText;
+										};
+										matchingElmInList.innerHTML = "Sending...";
+										XMLHttp.send("html=" + encodeURIComponent(nodeCode.replace(regExpClass, "").replace(regExpSpaceFix, "")) + "&format=plain");
+										clearTimeout(requestTimer);
+										requestTimer = setTimeout(function () {
+											XMLHttp.abort();
+											matchingElmInList.innerHTML = "Timed out. Click to try again";
+										}, 3000);
 									}
 									else if (!regExpInnerCodeClass.test(evt.target.className)) {
 										if (regExpCollapsedClass.test(this.className)) {

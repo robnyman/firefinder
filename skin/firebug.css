@@ -60,8 +60,9 @@
 	margin: 0 10px 10px;
 }
 
-.firefinder-results .firefinder-result-item .firefinder-friendly-fire-fired {
+.firefinder-results .firefinder-result-item .firefinder-friendly-fire-url {
 	color: #00f;
+	margin-right: 3px;
 }
 
 .firefinder-results .firefinder-result-item.collapsed .inner-code-container,
