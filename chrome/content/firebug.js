@@ -11,6 +11,7 @@ FBL.ns(function () {
 			regExpFriendlyFireURLClass = /firefinder\-friendly\-fire\-url/,
 			regExpFriendlyFireCopyURLClass = /firefinder\-friendly\-fire\-copy\-url/,
 			regExpSpaceFix = /^\s+|\s+$/g,
+			regExpEmptyClass = /\sclass=(""|'')/g,
 			regExpInnerCodeClass = /inner\-code\-container/,
 			regExpSlashEscape = /\//g,
 			regExpCharacters = /["<>\r\n\t]/g,
@@ -47,15 +48,31 @@ FBL.ns(function () {
 			getFirefinderState = function () {
 				var tabIndex = this.getTabIndex(),
 					state = statesFirefinder[tabIndex];
+				if (!state) {
+					state = statesFirefinder[getTabIndex()] = {
+						matchingElements : []
+					};
+				}	
 				return state;	
 			};
 		
 		Firebug.firefinderModel = extend(Firebug.Module, {
 			baseContentAdded : false,
 		    showPanel : function(browser, panel) {
-				var isPanel = panel && panel.name === panelName;
-				var firefinderButtons = browser.chrome.$("fbfirefinderButtons");
+				var isPanel = panel && panel.name === panelName, 
+					firefinderButtons = browser.chrome.$("fbfirefinderButtons"),
+					state = getFirefinderState(),
+					startAutoSelect = Firebug.getPref(Firebug.prefDomain, "firefinder.startAutoSelect"),
+					firefinderAutoSelectButton = document.getElementById("firefinderAutoSelectButton");
 				collapse(firefinderButtons, !isPanel);
+				if (isPanel) {
+					if (startAutoSelect) {
+						Firebug.firefinderModel.autoSelect(FirebugContext, true);
+					}
+					if (firefinderAutoSelectButton) {
+						firefinderAutoSelectButton.checked = (startAutoSelect || state.autoSelect)? true : false;
+					}
+				}
 		    },
 		
 			addBaseContent : function (panelNode) {
@@ -146,7 +163,7 @@ FBL.ns(function () {
 				}
 			},
 			
-		   	run : function (context, XPath) {
+		   	run : function (context, XPath, element) {
 				var panel = context.getPanel(panelName),
 					panelNode = panel.panelNode,
 					collapseMatchesList = Firebug.getPref(Firebug.prefDomain, "firefinder.collapseMatchesList"),
@@ -174,7 +191,10 @@ FBL.ns(function () {
 							sizzleDoc = content.wrappedJSObject.Sizzle;
 						
 						// Find matching elements
-						if (XPath) {
+						if (typeof element !== "undefined") {
+							matchingElements = [element];
+						}
+						else if (XPath) {
 							matchingElements = [];
 							var xPathNodes = content.document.evaluate(filterExpression, content.document, ((content.document.documentElement.namespaceURI === ns.xhtml)? "xhtml:" : null), 0, null), node;
 							while ((node = xPathNodes.iterateNext())) {
@@ -290,14 +310,10 @@ FBL.ns(function () {
 									else if (regExpFriendlyFireClass.test(targetClassName)) {
 										matchingElm = state.matchingElements[this.getAttribute("ref")];
 										var matchingElmInList = evt.target,
-											nodeName = matchingElm.nodeName.toLowerCase(),
-											nodeCode = '<',
-											nodeAttributes = "";
-										for (m=0, ml=matchingElm.attributes.length; m<ml; m++) {
-											attr = matchingElm.attributes[m];
-											nodeAttributes += " " + attr.name + '="' + attr.value + '"';
-										};	
-										nodeCode += nodeName + nodeAttributes + '>' + matchingElm.innerHTML + '</' + nodeName + '>';
+											fakeDivForGettingInnerHTML = content.document.createElement("div"),
+											nodeCode;
+										fakeDivForGettingInnerHTML.appendChild(matchingElm.cloneNode(true));
+										nodeCode = fakeDivForGettingInnerHTML.innerHTML;
 									
 										var XMLHttp = new XMLHttpRequest(),
 											failedText = "Failed. Click to try again",
@@ -331,7 +347,7 @@ FBL.ns(function () {
 											matchingElmInList.innerHTML = failedText;
 										};
 										matchingElmInList.innerHTML = "Sending...";
-										XMLHttp.send("html=" + encodeURIComponent(nodeCode.replace(regExpClass, "").replace(regExpSpaceFix, "")) + "&format=plain");
+										XMLHttp.send("html=" + encodeURIComponent(nodeCode.replace(regExpClass, "").replace(regExpSpaceFix, "").replace(regExpEmptyClass, "")) + "&format=plain");
 										clearTimeout(requestTimer);
 										requestTimer = setTimeout(function () {
 											XMLHttp.abort();
@@ -386,12 +402,46 @@ FBL.ns(function () {
 					var inputField = dLite.elmsByClass("firefinder-field", "input", panel.panelNode)[0];
 					inputField.select();
 					inputField.focus();
-				}	
+				}
 			},
 		
 			hide : function (context) {
 				Firebug.toggleBar(false, panelName);
 		    },
+		
+			autoSelect : function (context, forceOn) {
+				var state = getFirefinderState(),
+					firefinderAutoSelectButton = document.getElementById("firefinderAutoSelectButton");
+				if (forceOn || !state.autoSelect) {
+					state.autoSelect = true;
+					content.document.addEventListener("mouseover", Firebug.firefinderModel.selectCurrentElm, true);
+					content.document.addEventListener("click", Firebug.firefinderModel.selectCurrentElm, true);
+					firefinderAutoSelectButton.checked = true;
+				}
+				else {
+					Firebug.firefinderModel.turnOffAutoSelect();
+					firefinderAutoSelectButton.checked = false;
+				}
+			},
+			
+			selectCurrentElm : function (evt) {
+				Firebug.firefinderModel.run(FirebugContext, null, evt.target);
+				if (evt.type === "click") {
+					evt.preventDefault();
+					Firebug.firefinderModel.turnOffAutoSelect(true);
+				}
+			},
+			
+			turnOffAutoSelect : function (keepSelectedElm) {
+				var state = getFirefinderState();
+				state.autoSelect = false;
+				content.document.removeEventListener("mouseover", Firebug.firefinderModel.selectCurrentElm, true);
+				content.document.removeEventListener("click", Firebug.firefinderModel.selectCurrentElm, true);
+				document.getElementById("firefinderAutoSelectButton").checked = false;
+				if (!keepSelectedElm) {
+					Firebug.firefinderModel.clear(FirebugContext);
+				}
+			},
 		
 			clear : function (context) {
 				var panel = context.getPanel(panelName),
@@ -400,13 +450,7 @@ FBL.ns(function () {
 					resultsContainer = dLite.elmsByClass("firefinder-results-container", "div", panelNode)[0],
 					matchingElements;
 					
-				resultsContainer.className = "firefinder-results-container initial-view";	
-					
-				if (!state) {
-					state = statesFirefinder[getTabIndex()] = {
-						matchingElements : []
-					};
-				}
+				resultsContainer.className = "firefinder-results-container initial-view";
 				matchingElements = state.matchingElements;
 				
 				// Clear previosuly matched elements' CSS classes	
@@ -436,6 +480,7 @@ FBL.ns(function () {
 			
 			getOptionsMenuItems : function () {
 				return [
+					this.optionsMenuItem("Start Auto-select when Firefinder is activated", "firefinder.startAutoSelect"),
 					this.optionsMenuItem("Collapse matching results", "firefinder.collapseMatchesList")
 				];
 			},
