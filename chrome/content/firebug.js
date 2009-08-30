@@ -337,6 +337,9 @@ FBL.ns(function () {
 													var response = XMLHttp.responseText + "/edit#html";
 													matchingElmInList.className += " firefinder-friendly-fire-fired";
 													matchingElmInList.innerHTML = '<span class="firefinder-friendly-fire-url">' + response + '</span>(<span class="firefinder-friendly-fire-copy-url" url="' + response + '">Copy</span>)';
+													if (Firebug.getPref(Firebug.prefDomain, "firefinder.openFriendlyFirePageAutomatically")) {
+														gBrowser.selectedTab = gBrowser.addTab(response);
+													}
 												}
 												else {
 													matchingElmInList.innerHTML = failedText;
@@ -480,8 +483,9 @@ FBL.ns(function () {
 			
 			getOptionsMenuItems : function () {
 				return [
+					this.optionsMenuItem("Collapse matching results", "firefinder.collapseMatchesList"),
 					this.optionsMenuItem("Start Auto-select when Firefinder is activated", "firefinder.startAutoSelect"),
-					this.optionsMenuItem("Collapse matching results", "firefinder.collapseMatchesList")
+					this.optionsMenuItem("Open FriendlyFire code page automatically after submit", "firefinder.openFriendlyFirePageAutomatically"),
 				];
 			},
 			
