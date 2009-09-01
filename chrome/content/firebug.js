@@ -73,6 +73,9 @@ FBL.ns(function () {
 						firefinderAutoSelectButton.checked = (startAutoSelect || state.autoSelect)? true : false;
 					}
 				}
+				else {
+					Firebug.firefinderModel.turnOffAutoSelect();
+				}
 		    },
 		
 			addBaseContent : function (panelNode) {
