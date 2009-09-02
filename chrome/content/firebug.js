@@ -75,7 +75,7 @@ FBL.ns(function () {
 					}
 				}
 				else {
-					Firebug.firefinderModel.turnOffAutoSelect();
+					Firebug.firefinderModel.turnOffAutoSelect(true);
 				}
 		    },
 		
