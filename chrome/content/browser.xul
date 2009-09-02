@@ -12,7 +12,7 @@
 		</keyset>
 		
 		<popup id="contentAreaContextMenu">
-	        <menuitem id="firefinder-current-element" label="Firefind Element" insertbefore="menu_firebugInspect" oncommand="Firebug.firefinderModel.show(FirebugContext); Firebug.firefinderModel.run(FirebugContext, null, document.popupNode)"/>
+	        <menuitem id="firefinder-current-element" label="Firefind Element" insertbefore="menu_firebugInspect" oncommand="Firebug.firefinderModel.show(FirebugContext); Firebug.firefinderModel.run(FirebugContext, document.popupNode)"/>
 	    </popup>
 		
 </overlay>

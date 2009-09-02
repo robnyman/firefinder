@@ -2,6 +2,7 @@
 FBL.ns(function () {
 	with (FBL) {
 		var panelName = "firefinder",
+			regExpIsXPath = /^\//,
 			regExpClass = /\s?firefinder\-match(\-hover)?/g,
 			regExpHoverClass = /firefinder\-match\-hover/,
 			regExpInitialViewClass = /initial\-view/,
@@ -118,19 +119,9 @@ FBL.ns(function () {
 										{
 											id : "firefinder-css-button",
 											type : "button",
-											value : "CSS filter",
+											value : "Filter",
 											onclick : function () {
 												Firebug.firefinderModel.run(FirebugContext);
-											}
-										}
-									),
-									INPUT(
-										{
-											id : "firefinder-xpath-button",
-											type : "button",
-											value : "XPath filter",
-											onclick : function () {
-												Firebug.firefinderModel.run(FirebugContext, true);
 											}
 										}
 									)
@@ -166,7 +157,7 @@ FBL.ns(function () {
 				}
 			},
 			
-		   	run : function (context, XPath, element) {
+		   	run : function (context, element) {
 				var panel = context.getPanel(panelName),
 					panelNode = panel.panelNode,
 					collapseMatchesList = Firebug.getPref(Firebug.prefDomain, "firefinder.collapseMatchesList"),
@@ -177,7 +168,7 @@ FBL.ns(function () {
 					firefinderResultItems,
 					
 					// JavaScript and CSS to add to the web browser content
-					scriptApplied = content.document.getElementById("firefinder-selector"),
+					cssApplied = content.document.getElementById("firefinder-css"),
 					head,
 					script,
 					css,
@@ -186,12 +177,10 @@ FBL.ns(function () {
 					parse = function () {
 						// CSS/XPath to filter by
 						var filterExpression = inputField.value,
+							XPath = regExpIsXPath.test(filterExpression),
 							resultItem = "",
 							state = Firebug.firefinderModel.clear(context),
-							matchingElements,
-							
-							// Sizzle reference
-							sizzleDoc = content.wrappedJSObject.Sizzle;
+							matchingElements;
 						
 						// Find matching elements
 						if (typeof element !== "undefined") {
@@ -205,7 +194,7 @@ FBL.ns(function () {
 							}
 						}
 						else {
-							matchingElements = sizzleDoc(filterExpression.replace(regExpSlashEscape, "\\\/"));
+							matchingElements = new XPCNativeWrapper(content).document.querySelectorAll(filterExpression.replace(regExpSlashEscape, "\\\/"));
 						}
 						
 						// Add class to matching elements and clone them to the results container
@@ -320,7 +309,7 @@ FBL.ns(function () {
 									
 										var XMLHttp = new XMLHttpRequest(),
 											failedText = "Failed. Click to try again",
-											requestTimer;
+											requestTimer = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);
 										XMLHttp.open("POST", "http://jsbin.com/save", true);
 
 										// These two are vital
@@ -335,7 +324,7 @@ FBL.ns(function () {
 
 										XMLHttp.onreadystatechange = function () {
 											if (XMLHttp.readyState === 4) {
-												clearTimeout(requestTimer);
+												requestTimer.cancel();
 												if (XMLHttp.status === 200) {
 													var response = XMLHttp.responseText + "/edit#html";
 													matchingElmInList.className += " firefinder-friendly-fire-fired";
@@ -354,11 +343,11 @@ FBL.ns(function () {
 										};
 										matchingElmInList.innerHTML = "Sending...";
 										XMLHttp.send("html=" + encodeURIComponent(nodeCode.replace(regExpClass, "").replace(regExpSpaceFix, "").replace(regExpEmptyClass, "")) + "&format=plain");
-										clearTimeout(requestTimer);
-										requestTimer = setTimeout(function () {
+										requestTimer.cancel();
+										requestTimer.initWithCallback(function () {
 											XMLHttp.abort();
 											matchingElmInList.innerHTML = "Timed out. Click to try again";
-										}, 3000);
+										}, 3000, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
 									}
 									else if (!regExpInnerCodeClass.test(evt.target.className)) {
 										if (regExpCollapsedClass.test(this.className)) {
@@ -378,25 +367,16 @@ FBL.ns(function () {
 						resultsContainer.className = resultsContainer.className.replace(regExpInitialViewClass, "").replace(regExpSpaceFix, "");
 					};
 															
-					if (!scriptApplied) {
-						head = content.document.getElementsByTagName("head")[0];
-						
-						script = content.document.createElement("script").wrappedJSObject;
-						script.id = "firefinder-selector";
-						script.src = "chrome://firefinder/content/sizzle.js";
-						script.type = "text/javascript";
-						script.onload = parse;
-						head.appendChild(script);
-
-						css = content.document.createElement("link").wrappedJSObject;
+					if (!cssApplied) {
+						head = content.document.getElementsByTagName("head")[0];						
+						css = new XPCNativeWrapper(content).document.createElement("link");
+						css.id = "firefinder-css";
 						css.type = "text/css";
 						css.rel = "stylesheet";
 						css.href = "chrome://firefinder/content/browser.css";
 						head.appendChild(css);
 					}
-					else {
-						parse();
-					}
+					parse();
 		    },
 		
 			show : function (context) {
@@ -431,7 +411,7 @@ FBL.ns(function () {
 			},
 			
 			selectCurrentElm : function (evt) {
-				Firebug.firefinderModel.run(FirebugContext, null, evt.target);
+				Firebug.firefinderModel.run(FirebugContext, evt.target);
 				if (evt.type === "click") {
 					evt.preventDefault();
 					Firebug.firefinderModel.turnOffAutoSelect(true);

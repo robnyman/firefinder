@@ -1,4 +1,3 @@
-content     firefinder    chrome/content/ xpcnativewrappers=no
 content     firefinder    chrome/content/ contentaccessible=yes
 
 overlay chrome://firebug/content/firebugOverlay.xul chrome://firefinder/content/firebug.xul
