@@ -1,3 +1,4 @@
+content     firefinder    chrome/content/
 content     firefinder    chrome/content/ contentaccessible=yes
 
 overlay chrome://firebug/content/firebugOverlay.xul chrome://firefinder/content/firebug.xul
