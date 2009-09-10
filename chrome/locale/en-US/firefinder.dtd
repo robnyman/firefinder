@@ -1,1 +1,8 @@
 <!ENTITY showfirefinder "Show Firefinder for Firebug">
+<!ENTITY firefindelement "Firefind Element">
+<!ENTITY firefinderautoselect "Auto-select">
+<!ENTITY firefinderclear "Clear">
+<!ENTITY firefinderhide "Hide">
+<!ENTITY firefinderautoselectelement "Auto-select HTML element by activating this and then hovering over it">
+<!ENTITY firefinderclearresults "Clear results">
+<!ENTITY firefinderhidefirebug "Hide Firebug">

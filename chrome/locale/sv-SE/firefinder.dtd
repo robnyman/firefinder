@@ -1,0 +1,8 @@
+<!ENTITY showfirefinder "Visa Firefinder till Firebug">
+<!ENTITY firefindelement "Firefind element">
+<!ENTITY firefinderautoselect "Autovälj element">
+<!ENTITY firefinderclear "Rensa">
+<!ENTITY firefinderhide "Göm">
+<!ENTITY firefinderautoselectelement "Autovälj HTML-element genom att aktivera detta och sedan styra över elementet">
+<!ENTITY firefinderclearresults "Rensa resultat">
+<!ENTITY firefinderhidefirebug "Göm Firebug">

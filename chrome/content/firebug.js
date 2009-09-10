@@ -30,11 +30,22 @@ FBL.ns(function () {
 				}
 				return retVal;
 			},
-			inputField = null;
-			results = null;
-			resultsHeader = null;
+			inputField = null,
+			results = null,
+			resultsHeader = null,
 			statesFirefinder = {
 			},
+			strBundle = document.getElementById("strings"),
+			translations = {
+				firefinderfindmatchingelements : strBundle.getString("firefinderfindmatchingelements"),
+				firefindermatchingelements : strBundle.getString("firefindermatchingelements"),
+				firefindernomatches : strBundle.getString("firefindernomatches"),
+				firefinderfilter : strBundle.getString("firefinderfilter"),
+				firefinderinspect : strBundle.getString("firefinderinspect"),
+				firefindercollapsematcheslist : strBundle.getString("firefindercollapsematcheslist"),
+				firefinderstartautoselect : strBundle.getString("firefinderstartautoselect"),
+				firefinderopenfriendlyfirepageautomatically : strBundle.getString("firefinderopenfriendlyfirepageautomatically")
+			},  
 			getTabIndex = function () {
 				var browsers = gBrowser.browsers,
 					tabIndex;
@@ -47,7 +58,7 @@ FBL.ns(function () {
 				return tabIndex;
 			},
 			getFirefinderState = function () {
-				var tabIndex = this.getTabIndex(),
+				var tabIndex = getTabIndex(),
 					state = statesFirefinder[tabIndex];
 				if (!state) {
 					state = statesFirefinder[getTabIndex()] = {
@@ -96,8 +107,8 @@ FBL.ns(function () {
 									),
 									SPAN({
 											id : "firefinder-help-text"
-										}, 
-										" - Find elements matching one or several CSS expressions, or an XPath filter"
+										},
+										" - " + translations.firefinderfindmatchingelements
 									)
 								),
 								DIV(
@@ -119,7 +130,7 @@ FBL.ns(function () {
 										{
 											id : "firefinder-css-button",
 											type : "button",
-											value : "Filter",
+											value : translations.firefinderfilter,
 											onclick : function () {
 												Firebug.firefinderModel.run(FirebugContext);
 											}
@@ -134,13 +145,13 @@ FBL.ns(function () {
 								H2({
 										class : "firefinder-results-header"
 									},
-									"Matching elements"
+									translations.firefindermatchingelements
 								),
 								DIV(
 									{
 										class : "firefinder-results"
 									},
-									"No matches"
+									translations.nomatches
 								)
 							)
 						)
@@ -206,7 +217,7 @@ FBL.ns(function () {
 								
 								resultItem += "<div class='firefinder-result-item" + ((j % 2 === 0)? " odd" : "") + "'";
 								resultItem += " ref='" + j + "'>";
-								resultItem += "<div class='firefinder-inspect-element'>Inspect</div>";
+								resultItem += "<div class='firefinder-inspect-element'>" + translations.firefinderinspect + "</div>";
 								resultItem += "<div class='firefinder-friendly-fire-this'>FriendlyFire</div>";
 								resultItem += "&lt" + nodeNameCode;
 								for (k=0, kl=elm.attributes.length; k<kl; k++) {
@@ -227,7 +238,7 @@ FBL.ns(function () {
 							}
 						}
 						else {
-							resultItem = "No matches";
+							resultItem = translations.firefindernomatches;
 						}
 						
 						state.matchingElements = matchingElements;
@@ -363,7 +374,7 @@ FBL.ns(function () {
 								elm.className += " collapsed";
 							}	
 						}
-						resultsHeader.innerHTML = "Matching elements: " + matchingElements.length;
+						resultsHeader.innerHTML = translations.firefindermatchingelements + ": " + matchingElements.length;
 						resultsContainer.className = resultsContainer.className.replace(regExpInitialViewClass, "").replace(regExpSpaceFix, "");
 					};
 															
@@ -464,11 +475,11 @@ FBL.ns(function () {
 				Firebug.firefinderModel.addBaseContent(this.panelNode);
 			},
 			
-			getOptionsMenuItems : function () {
+			getOptionsMenuItems : function () {				
 				return [
-					this.optionsMenuItem("Collapse matching results", "firefinder.collapseMatchesList"),
-					this.optionsMenuItem("Start Auto-select when Firefinder is activated", "firefinder.startAutoSelect"),
-					this.optionsMenuItem("Open FriendlyFire code page automatically after submit", "firefinder.openFriendlyFirePageAutomatically"),
+					this.optionsMenuItem(translations.firefindercollapsematcheslist, "firefinder.collapseMatchesList"),
+					this.optionsMenuItem(translations.firefinderstartautoselect, "firefinder.startAutoSelect"),
+					this.optionsMenuItem(translations.firefinderopenfriendlyfirepageautomatically, "firefinder.openFriendlyFirePageAutomatically"),
 				];
 			},
 			

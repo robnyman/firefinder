@@ -4,6 +4,7 @@ content     firefinder    chrome/content/ contentaccessible=yes
 overlay chrome://firebug/content/firebugOverlay.xul chrome://firefinder/content/firebug.xul
 overlay chrome://browser/content/browser.xul chrome://firefinder/content/browser.xul
 
-locale	firefinder	en-US	locale/en-US/
+locale	firefinder	en-US	chrome/locale/en-US/
+locale	firefinder	sv-SE	chrome/locale/sv-SE/
 
 skin	firefinder	classic/1.0	skin/

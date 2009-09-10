@@ -16,11 +16,15 @@
 	        <hbox id="fbToolbarInner" insertbefore="fbDetachButton" flex="1" align="center">
 	            <hbox id="fbfirefinderButtons" insertafter="fbNetButtons">
 	                <toolbarseparator/>
-					<toolbarbutton id="firefinderAutoSelectButton" label="Auto-select" class="toolbar-text-button" tooltiptext="Auto-select HTML element by activating this and then hovering over it" command="cmd_firefinderAutoSelectButton"/>
-					<toolbarbutton id="firefinderClearButton" label="Clear" class="toolbar-text-button" tooltiptext="Clear results" command="cmd_firefinderClearButton"/>
-					<toolbarbutton id="firefinderHideButton" label="Hide" class="toolbar-text-button" tooltiptext="Hide Firebug" command="cmd_firefinderHideButton"/>
+					<toolbarbutton id="firefinderAutoSelectButton" label="&firefinderautoselect;" class="toolbar-text-button" tooltiptext="&firefinderautoselectelement;" command="cmd_firefinderAutoSelectButton"/>
+					<toolbarbutton id="firefinderClearButton" label="&firefinderclear;" class="toolbar-text-button" tooltiptext="&firefinderclearresults;" command="cmd_firefinderClearButton"/>
+					<toolbarbutton id="firefinderHideButton" label="&firefinderhide;" class="toolbar-text-button" tooltiptext="&firefinderhidefirebug;" command="cmd_firefinderHideButton"/>
 	           </hbox>
 	       </hbox>
 	    </toolbar>
+	
+		<stringbundleset>
+			<stringbundle id="strings" src="chrome://firefinder/locale/firefinder.properties"/>
+		</stringbundleset>		
 
 </overlay>
