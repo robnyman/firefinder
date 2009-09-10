@@ -8,5 +8,6 @@ locale	firefinder	en-US	chrome/locale/en-US/
 locale	firefinder	sv-SE	chrome/locale/sv-SE/
 locale	firefinder	da-DK	chrome/locale/da-DK/
 locale	firefinder	de-DE	chrome/locale/de-DE/
+locale	firefinder	nl-NL	chrome/locale/nl-NL/
 
 skin	firefinder	classic/1.0	skin/

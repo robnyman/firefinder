@@ -1,0 +1,8 @@
+<!ENTITY showfirefinder "Toon Firefinder voor Firebug">
+<!ENTITY firefindelement "Firefind element">
+<!ENTITY firefinderautoselect "Automatisch selecteren">
+<!ENTITY firefinderclear "Wissen">
+<!ENTITY firefinderhide "Verbergen">
+<!ENTITY firefinderautoselectelement "Activeer deze functie om automatisch met de muis het HTML element te selecteren">
+<!ENTITY firefinderclearresults "Wis resultaten">
+<!ENTITY firefinderhidefirebug "Firebug verbergen">
