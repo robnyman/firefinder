@@ -41,6 +41,9 @@ FBL.ns(function () {
 				firefindermatchingelements : strBundle.getString("firefindermatchingelements"),
 				firefindernomatches : strBundle.getString("firefindernomatches"),
 				firefinderfilter : strBundle.getString("firefinderfilter"),
+				firefindersending : strBundle.getString("firefindersending"),
+				firefindertimedout : strBundle.getString("firefindertimedout"),
+				firefindercopy : strBundle.getString("firefindercopy"),
 				firefinderinspect : strBundle.getString("firefinderinspect"),
 				firefindercollapsematcheslist : strBundle.getString("firefindercollapsematcheslist"),
 				firefinderstartautoselect : strBundle.getString("firefinderstartautoselect"),
@@ -339,7 +342,7 @@ FBL.ns(function () {
 												if (XMLHttp.status === 200) {
 													var response = XMLHttp.responseText + "/edit#html";
 													matchingElmInList.className += " firefinder-friendly-fire-fired";
-													matchingElmInList.innerHTML = '<span class="firefinder-friendly-fire-url">' + response + '</span>(<span class="firefinder-friendly-fire-copy-url" url="' + response + '">Copy</span>)';
+													matchingElmInList.innerHTML = '<span class="firefinder-friendly-fire-url">' + response + '</span>(<span class="firefinder-friendly-fire-copy-url" url="' + response + '">' + translations.firefindercopy + '</span>)';
 													if (Firebug.getPref(Firebug.prefDomain, "firefinder.openFriendlyFirePageAutomatically")) {
 														gBrowser.selectedTab = gBrowser.addTab(response);
 													}
@@ -352,12 +355,12 @@ FBL.ns(function () {
 										XMLHttp.onerror = function () {
 											matchingElmInList.innerHTML = failedText;
 										};
-										matchingElmInList.innerHTML = "Sending...";
+										matchingElmInList.innerHTML = translations.firefindersending + "...";
 										XMLHttp.send("html=" + encodeURIComponent(nodeCode.replace(regExpClass, "").replace(regExpSpaceFix, "").replace(regExpEmptyClass, "")) + "&format=plain");
 										requestTimer.cancel();
 										requestTimer.initWithCallback(function () {
 											XMLHttp.abort();
-											matchingElmInList.innerHTML = "Timed out. Click to try again";
+											matchingElmInList.innerHTML = translations.firefindertimedout;
 										}, 3000, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
 									}
 									else if (!regExpInnerCodeClass.test(evt.target.className)) {
