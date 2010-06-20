@@ -1,8 +1,8 @@
-<!ENTITY showfirefinder "Pokaż Firefinder">
+<!ENTITY showfirefinder "Pokaż Firefinder dla Firebuga">
 <!ENTITY firefindelement "Znajdź element">
 <!ENTITY firefinderautoselect "Wybierz automatycznie">
 <!ENTITY firefinderclear "Wyczyść">
 <!ENTITY firefinderhide "Ukryj">
-<!ENTITY firefinderautoselectelement "Wybierz automatycznie element HTML poprzez wskazanie go myszką">
+<!ENTITY firefinderautoselectelement "Wybierz automatycznie element HTML, aktywuj i umieść myszkę nad elementem">
 <!ENTITY firefinderclearresults "Wyczyść wyniki">
-<!ENTITY firefinderhidefirebug "Ukryj Firebuga">
+<!ENTITY firefinderhidefirebug "Ukryj Firebug">
