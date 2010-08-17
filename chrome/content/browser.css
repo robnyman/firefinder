@@ -1,10 +1,10 @@
 /* Web browser window styles */
 /* Match class */
 body .firefinder-match {
-	outline: 2px dashed #f00;
+	outline: 2px dashed #f00 !important;
 }
 
 /* Match hover class */
 body .firefinder-match-hover {
-	outline: 4px dashed #00f;
+	outline: 4px dashed #00f !important;
 }
