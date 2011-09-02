@@ -82,7 +82,7 @@ FBL.ns(function () {
 				collapse(firefinderButtons, !isPanel);
 				if (isPanel) {
 					if (startAutoSelect) {
-						Firebug.firefinderModel.autoSelect(FirebugContext, true);
+						Firebug.firefinderModel.autoSelect(Firebug.currentContext, true);
 					}
 					if (firefinderAutoSelectButton) {
 						firefinderAutoSelectButton.checked = (startAutoSelect || state.autoSelect)? true : false;
@@ -124,7 +124,7 @@ FBL.ns(function () {
 											type : "text",
 											onkeypress : function (evt) {
 												if (evt.keyCode === 13) {
-													Firebug.firefinderModel.run(FirebugContext);
+													Firebug.firefinderModel.run(Firebug.currentContext);
 												}
 											}
 										}
@@ -135,7 +135,7 @@ FBL.ns(function () {
 											type : "button",
 											value : translations.firefinderfilter,
 											onclick : function () {
-												Firebug.firefinderModel.run(FirebugContext);
+												Firebug.firefinderModel.run(Firebug.currentContext);
 											}
 										}
 									)
@@ -268,7 +268,7 @@ FBL.ns(function () {
 										matchingElm = state.matchingElements[this.getAttribute("ref")];
 										matchingElm.className = matchingElm.className.replace(regExpClass, "").replace(regExpSpaceFix, "");
 										Firebug.toggleBar(true, "html");
-										FirebugChrome.select(matchingElm, "html");
+										Firebug.chrome.select(matchingElm, "html");
 									}
 									else if (regExpFriendlyFireURLClass.test(targetClassName)) {
 										gBrowser.selectedTab = gBrowser.addTab(evt.target.textContent);
@@ -397,8 +397,8 @@ FBL.ns(function () {
 				// Forces Firebug to be shown, even if it's off
 				Firebug.toggleBar(true);
 				Firebug.toggleBar(true, panelName);
-				if (FirebugContext) {
-					var panel = FirebugContext.getPanel(panelName);
+				if (Firebug.currentContext) {
+					var panel = Firebug.currentContext.getPanel(panelName);
 					var inputField = dLite.elmsByClass("firefinder-field", "input", panel.panelNode)[0];
 					inputField.select();
 					inputField.focus();
@@ -425,7 +425,7 @@ FBL.ns(function () {
 			},
 			
 			selectCurrentElm : function (evt) {
-				Firebug.firefinderModel.run(FirebugContext, evt.target);
+				Firebug.firefinderModel.run(Firebug.currentContext, evt.target);
 				if (evt.type === "click") {
 					evt.preventDefault();
 					Firebug.firefinderModel.turnOffAutoSelect(true);
@@ -439,12 +439,12 @@ FBL.ns(function () {
 				content.document.removeEventListener("click", Firebug.firefinderModel.selectCurrentElm, true);
 				document.getElementById("firefinderAutoSelectButton").checked = false;
 				if (!keepSelectedElm) {
-					Firebug.firefinderModel.clear(FirebugContext);
+					Firebug.firefinderModel.clear(Firebug.currentContext);
 				}
 			},
 		
 			clear : function (context) {
-				var panel = context.getPanel(panelName),
+				var panel = Firebug.currentContext.getPanel(panelName),
 					panelNode = panel.panelNode,
 					state = getFirefinderState(),
 					resultsContainer = dLite.elmsByClass("firefinder-results-container", "div", panelNode)[0],

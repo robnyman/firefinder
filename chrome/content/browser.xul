@@ -4,15 +4,15 @@
 <overlay id="sample" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 		
 		<menupopup id="menu_ToolsPopup"> 
-			<menuitem id="run-firefinder" label="&showfirefinder;" key="firefinder-run-key" oncommand="Firebug.firefinderModel.show(FirebugContext)"/> 
+			<menuitem id="run-firefinder" label="&showfirefinder;" key="firefinder-run-key" oncommand="Firebug.firefinderModel.show(Firebug.context)"/> 
 		</menupopup>
 		
 		<keyset>
-			<key id="firefinder-run-key" modifiers="accel shift" key="V" oncommand="Firebug.firefinderModel.show(FirebugContext)"/>
+			<key id="firefinder-run-key" modifiers="accel shift" key="V" oncommand="Firebug.firefinderModel.show(Firebug.context)"/>
 		</keyset>
 		
 		<popup id="contentAreaContextMenu">
-	        <menuitem id="firefinder-current-element" label="&firefindelement;" insertbefore="menu_firebugInspect" oncommand="Firebug.firefinderModel.show(FirebugContext); Firebug.firefinderModel.run(FirebugContext, document.popupNode)"/>
+	        <menuitem id="firefinder-current-element" label="&firefindelement;" insertbefore="menu_firebugInspect" oncommand="Firebug.firefinderModel.show(Firebug.context); Firebug.firefinderModel.run(Firebug.context, document.popupNode)"/>
 	    </popup>
 		
 </overlay>
