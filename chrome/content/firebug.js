@@ -50,10 +50,11 @@ FBL.ns(function () {
 				firefinderopenfriendlyfirepageautomatically : strBundle.getString("firefinderopenfriendlyfirepageautomatically")
 			},  
 			getTabIndex = function () {
-				var browsers = gBrowser.browsers,
+                // alert("Hej");
+				var browsers = FBL.getTabBrowser().browsers,
 					tabIndex;
 				for (var i=0, il=browsers.length; i<il; i++) {
-					if(gBrowser.getBrowserAtIndex(i).contentWindow == content) {
+					if(FBL.getTabBrowser().getBrowserAtIndex(i).contentWindow == content) {
 						tabIndex = i;
 						break;
 					}
@@ -271,7 +272,7 @@ FBL.ns(function () {
 										Firebug.chrome.select(matchingElm, "html");
 									}
 									else if (regExpFriendlyFireURLClass.test(targetClassName)) {
-										gBrowser.selectedTab = gBrowser.addTab(evt.target.textContent);
+										FBL.getTabBrowser().selectedTab = FBL.getTabBrowser().addTab(evt.target.textContent);
 									}
 									else if (regExpFriendlyFireCopyURLClass.test(targetClassName)) {
 										// Copy to clipboard code taken from/inspired by https://developer.mozilla.org/en/Using_the_Clipboard
@@ -344,7 +345,7 @@ FBL.ns(function () {
 													matchingElmInList.className += " firefinder-friendly-fire-fired";
 													matchingElmInList.innerHTML = '<span class="firefinder-friendly-fire-url">' + response + '</span>(<span class="firefinder-friendly-fire-copy-url" url="' + response + '">' + translations.firefindercopy + '</span>)';
 													if (Firebug.getPref(Firebug.prefDomain, "firefinder.openFriendlyFirePageAutomatically")) {
-														gBrowser.selectedTab = gBrowser.addTab(response);
+														FBL.getTabBrowser().selectedTab = FBL.getTabBrowser().addTab(response);
 													}
 												}
 												else {
