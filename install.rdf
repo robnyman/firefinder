@@ -5,7 +5,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="firefinder@robertnyman.com"
                    em:name="Firefinder for Firebug"
-                   em:version="1.1"
+                   em:version="1.2.1"
                    em:creator="Robert Nyman"
                    em:description="Finds HTML elements matching chosen CSS selector(s) or XPath expression"
                    em:homepageURL="http://robertnyman.com/firefinder/"

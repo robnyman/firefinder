@@ -7,9 +7,9 @@
 		<script type="application/x-javascript" src="firebug.js" />
 		
 		<commandset id="mainCommandSet">
-			<command id="cmd_firefinderAutoSelectButton" key="firefinder-auto-select-key" oncommand="Firebug.firefinderModel.autoSelect(Firebug.context)"/>
-			<command id="cmd_firefinderClearButton" key="firefinder-clear-key" oncommand="Firebug.firefinderModel.clear(Firebug.context)"/>
-			<command id="cmd_firefinderHideButton" key="firefinder-hide-key" oncommand="Firebug.firefinderModel.hide(Firebug.context)"/>
+			<command id="cmd_firefinderAutoSelectButton" key="firefinder-auto-select-key" oncommand="Firebug.firefinderModel.autoSelect(Firebug.currentContext)"/>
+			<command id="cmd_firefinderClearButton" key="firefinder-clear-key" oncommand="Firebug.firefinderModel.clear(Firebug.currentContext)"/>
+			<command id="cmd_firefinderHideButton" key="firefinder-hide-key" oncommand="Firebug.firefinderModel.hide(Firebug.currentContext)"/>
 	    </commandset>
 
 	    <toolbar id="fbToolbar" align="center">

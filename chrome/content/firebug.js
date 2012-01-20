@@ -50,7 +50,6 @@ FBL.ns(function () {
 				firefinderopenfriendlyfirepageautomatically : strBundle.getString("firefinderopenfriendlyfirepageautomatically")
 			},  
 			getTabIndex = function () {
-                // alert("Hej");
 				var browsers = FBL.getTabBrowser().browsers,
 					tabIndex;
 				for (var i=0, il=browsers.length; i<il; i++) {
