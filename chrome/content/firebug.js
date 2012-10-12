@@ -35,7 +35,7 @@ FBL.ns(function () {
 			resultsHeader = null,
 			statesFirefinder = {
 			},
-			strBundle = document.getElementById("strings"),
+			strBundle = document.getElementById("firefinderstrings"),
 			translations = {
 				firefinderfindmatchingelements : strBundle.getString("firefinderfindmatchingelements"),
 				firefindermatchingelements : strBundle.getString("firefindermatchingelements"),
@@ -63,7 +63,7 @@ FBL.ns(function () {
 			getFirefinderState = function () {
 				var tabIndex = getTabIndex(),
 					state = statesFirefinder[tabIndex];
-				if (!state) {
+				if (!state || !state[tabIndex]) {
 					state = statesFirefinder[getTabIndex()] = {
 						matchingElements : []
 					};
@@ -292,7 +292,8 @@ FBL.ns(function () {
 										}
 										htmlstring.data = textHtml;
 										
-										var trans = Components.classes["@mozilla.org/widget/transferable;1"].createInstance(Components.interfaces.nsITransferable);  
+										var trans = Components.classes["@mozilla.org/widget/transferable;1"].createInstance(Components.interfaces.nsITransferable);
+										trans.init(null); 
 										if (!trans) {
 											alert("Copying failed");
 											return false;

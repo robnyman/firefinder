@@ -24,7 +24,7 @@
 	    </toolbar>
 	
 		<stringbundleset>
-			<stringbundle id="strings" src="chrome://firefinder/locale/firefinder.properties"/>
+			<stringbundle id="firefinderstrings" src="chrome://firefinder/locale/firefinder.properties"/>
 		</stringbundleset>		
 
 </overlay>

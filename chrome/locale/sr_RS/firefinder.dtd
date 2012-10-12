@@ -1,8 +1,0 @@
-<!ENTITY showfirefinder "Prikaži Firefinder za Firebug">
-<!ENTITY firefindelement "Pronađi element koristeći Firefinder">
-<!ENTITY firefinderautoselect "Automatski izaberi">
-<!ENTITY firefinderclear "Počisti">
-<!ENTITY firefinderhide "Sakrij">
-<!ENTITY firefinderautoselectelement "Automatski izaberi HTML element kada aktiviraš ovo i pređeš mišem preko njega">
-<!ENTITY firefinderclearresults "Počisti rezultate">
-<!ENTITY firefinderhidefirebug "Sakrij Firebug">
