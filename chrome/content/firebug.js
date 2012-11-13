@@ -61,15 +61,24 @@ FBL.ns(function () {
 				return tabIndex;
 			},
 			getFirefinderState = function () {
-				var tabIndex = getTabIndex(),
-					state = statesFirefinder[tabIndex];
-				if (!state || !state[tabIndex]) {
-					state = statesFirefinder[getTabIndex()] = {
-						matchingElements : []
-					};
-				}	
-				return state;	
+			    var tabIndex = getTabIndex(),
+			        state = statesFirefinder[tabIndex],
+			        matchingElementsExists = false;
+
+
+			    try {
+			        matchingElementsExists = state.matchingElements.length + "";
+			    } catch(e) {}
+
+			    if (!state || !matchingElementsExists) {
+			        state = statesFirefinder[tabIndex] = {
+			            matchingElements : []
+			        };
+			    }   
+
+			    return state;   
 			};
+
 		
 		Firebug.firefinderModel = extend(Firebug.Module, {
 			baseContentAdded : false,
