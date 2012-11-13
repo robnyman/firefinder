@@ -189,9 +189,10 @@ FBL.ns(function () {
 					results = dLite.elmsByClass("firefinder-results", "div", panelNode)[0],
 					resultsHeader = dLite.elmsByClass("firefinder-results-header", "h2", panelNode)[0],
 					firefinderResultItems,
-					
+
 					// JavaScript and CSS to add to the web browser content
-					cssApplied = content.document.getElementById("firefinder-css"),
+					currentDocument = Firebug.currentContext.window.document,
+					cssApplied = currentDocument.getElementById("firefinder-css"),
 					head,
 					script,
 					css,
@@ -211,13 +212,13 @@ FBL.ns(function () {
 						}
 						else if (XPath) {
 							matchingElements = [];
-							var xPathNodes = content.document.evaluate(filterExpression, content.document, ((content.document.documentElement.namespaceURI === ns.xhtml)? "xhtml:" : null), 0, null), node;
+							var xPathNodes = currentDocument.evaluate(filterExpression, currentDocument, ((currentDocument.documentElement.namespaceURI === ns.xhtml)? "xhtml:" : null), 0, null), node;
 							while ((node = xPathNodes.iterateNext())) {
 								matchingElements.push(node);
 							}
 						}
 						else {
-							matchingElements = new XPCNativeWrapper(content).document.querySelectorAll(filterExpression.replace(regExpSlashEscape, "\\\/"));
+							matchingElements = new XPCNativeWrapper(Firebug.currentContext.window).document.querySelectorAll(filterExpression.replace(regExpSlashEscape, "\\\/"));
 						}
 						
 						// Add class to matching elements and clone them to the results container
@@ -326,7 +327,7 @@ FBL.ns(function () {
 									else if (regExpFriendlyFireClass.test(targetClassName)) {
 										matchingElm = state.matchingElements[this.getAttribute("ref")];
 										var matchingElmInList = evt.target,
-											fakeDivForGettingInnerHTML = content.document.createElement("div"),
+											fakeDivForGettingInnerHTML = currentDocument.createElement("div"),
 											nodeCode;
 										fakeDivForGettingInnerHTML.appendChild(matchingElm.cloneNode(true));
 										nodeCode = fakeDivForGettingInnerHTML.innerHTML;
@@ -392,8 +393,8 @@ FBL.ns(function () {
 					};
 															
 					if (!cssApplied) {
-						head = content.document.getElementsByTagName("head")[0];						
-						css = new XPCNativeWrapper(content).document.createElement("link");
+						head = currentDocument.getElementsByTagName("head")[0];						
+						css = new XPCNativeWrapper(Firebug.currentContext.window).document.createElement("link");
 						css.id = "firefinder-css";
 						css.type = "text/css";
 						css.rel = "stylesheet";
@@ -421,11 +422,12 @@ FBL.ns(function () {
 		
 			autoSelect : function (context, forceOn) {
 				var state = getFirefinderState(),
-					firefinderAutoSelectButton = document.getElementById("firefinderAutoSelectButton");
+					firefinderAutoSelectButton = document.getElementById("firefinderAutoSelectButton"),
+					currentDocument = Firebug.currentContext.window.document;
 				if (forceOn || !state.autoSelect) {
 					state.autoSelect = true;
-					content.document.addEventListener("mouseover", Firebug.firefinderModel.selectCurrentElm, true);
-					content.document.addEventListener("click", Firebug.firefinderModel.selectCurrentElm, true);
+					currentDocument.addEventListener("mouseover", Firebug.firefinderModel.selectCurrentElm, true);
+					currentDocument.addEventListener("click", Firebug.firefinderModel.selectCurrentElm, true);
 					firefinderAutoSelectButton.checked = true;
 				}
 				else {
@@ -443,10 +445,11 @@ FBL.ns(function () {
 			},
 			
 			turnOffAutoSelect : function (keepSelectedElm) {
-				var state = getFirefinderState();
+				var state = getFirefinderState(),
+					currentDocument = Firebug.currentContext.window.document;
 				state.autoSelect = false;
-				content.document.removeEventListener("mouseover", Firebug.firefinderModel.selectCurrentElm, true);
-				content.document.removeEventListener("click", Firebug.firefinderModel.selectCurrentElm, true);
+				currentDocument.removeEventListener("mouseover", Firebug.firefinderModel.selectCurrentElm, true);
+				currentDocument.removeEventListener("click", Firebug.firefinderModel.selectCurrentElm, true);
 				document.getElementById("firefinderAutoSelectButton").checked = false;
 				if (!keepSelectedElm) {
 					Firebug.firefinderModel.clear(Firebug.currentContext);
