@@ -219,7 +219,7 @@ FBL.ns(function () {
 						
 						// Add class to matching elements and clone them to the results container
 						if (matchingElements.length > 0) {
-							for (var j=0, jl=matchingElements.length, elm, nodeNameValue, nodeNameCode, k, kl, attr; j<jl; j++) {
+							for (var j=0, jl=matchingElements.length, elm, nodeNameValue, nodeNameCode, k, kl, secElm, attr; j<jl; j++) {
 								elm = matchingElements[j];
 								nodeNameValue = elm.nodeName.toLowerCase();
 								nodeNameCode = "<span class='node-name'>" + nodeNameValue + "</span>";
@@ -228,14 +228,21 @@ FBL.ns(function () {
 								resultItem += " ref='" + j + "'>";
 								resultItem += "<div class='firefinder-inspect-element'>" + translations.firefinderinspect + "</div>";
 								resultItem += "&lt" + nodeNameCode;
+								secElm = document.createElement("div");
 								for (k=0, kl=elm.attributes.length; k<kl; k++) {
 									attr = elm.attributes[k];
-									resultItem += " " + attr.name + "=&quot;<span class='attribute-value'>" + attr.value + "</span>&quot;";
+									try	{
+										secElm.setAttribute(attr.name, attr.value);
+										resultItem += " " + attr.name + "=&quot;<span class='attribute-value'>" + secElm.getAttribute(attr.name) + "</span>&quot;";
+									}
+									catch (e) {
+									}	
 								};
 								resultItem += "&gt;";
 								
 								if (elm.textContent.length > 0) {
-								resultItem += "<div class='inner-code-container'>" + elm.textContent.replace(regExpCharacters, matchReplace) + "</div>";
+									secElm.textContent = elm.textContent;
+									resultItem += "<div class='inner-code-container'>" + secElm.textContent.replace(regExpCharacters, matchReplace) + "</div>";
 								}
 								if (!regExpSingleCloseElements.test(nodeNameValue)) {
 									resultItem += "<div class='end-tag'>&lt;/" + nodeNameCode + "&gt;</div>";
