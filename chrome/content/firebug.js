@@ -8,9 +8,6 @@ FBL.ns(function () {
 			regExpInitialViewClass = /initial\-view/,
 			regExpCollapsedClass = /collapsed/,
 			regExpInspectElementClass = /firefinder\-inspect\-element/,
-			regExpFriendlyFireClass = /firefinder\-friendly\-fire\-this/,
-			regExpFriendlyFireURLClass = /firefinder\-friendly\-fire\-url/,
-			regExpFriendlyFireCopyURLClass = /firefinder\-friendly\-fire\-copy\-url/,
 			regExpSpaceFix = /^\s+|\s+$/g,
 			regExpEmptyClass = /\sclass=(""|'')/g,
 			regExpInnerCodeClass = /inner\-code\-container/,
@@ -47,7 +44,6 @@ FBL.ns(function () {
 				firefinderinspect : strBundle.getString("firefinderinspect"),
 				firefindercollapsematcheslist : strBundle.getString("firefindercollapsematcheslist"),
 				firefinderstartautoselect : strBundle.getString("firefinderstartautoselect"),
-				firefinderopenfriendlyfirepageautomatically : strBundle.getString("firefinderopenfriendlyfirepageautomatically")
 			},  
 			getTabIndex = function () {
 				var browsers = FBL.getTabBrowser().browsers,
@@ -223,7 +219,7 @@ FBL.ns(function () {
 						
 						// Add class to matching elements and clone them to the results container
 						if (matchingElements.length > 0) {
-							for (var j=0, jl=matchingElements.length, elm, nodeNameValue, nodeNameCode, k, attr; j<jl; j++) {
+							for (var j=0, jl=matchingElements.length, elm, nodeNameValue, nodeNameCode, k, kl, attr; j<jl; j++) {
 								elm = matchingElements[j];
 								nodeNameValue = elm.nodeName.toLowerCase();
 								nodeNameCode = "<span class='node-name'>" + nodeNameValue + "</span>";
@@ -231,7 +227,6 @@ FBL.ns(function () {
 								resultItem += "<div class='firefinder-result-item" + ((j % 2 === 0)? " odd" : "") + "'";
 								resultItem += " ref='" + j + "'>";
 								resultItem += "<div class='firefinder-inspect-element'>" + translations.firefinderinspect + "</div>";
-								resultItem += "<div class='firefinder-friendly-fire-this'>FriendlyFire</div>";
 								resultItem += "&lt" + nodeNameCode;
 								for (k=0, kl=elm.attributes.length; k<kl; k++) {
 									attr = elm.attributes[k];
@@ -279,100 +274,6 @@ FBL.ns(function () {
 										matchingElm.className = matchingElm.className.replace(regExpClass, "").replace(regExpSpaceFix, "");
 										Firebug.toggleBar(true, "html");
 										Firebug.chrome.select(matchingElm, "html");
-									}
-									else if (regExpFriendlyFireURLClass.test(targetClassName)) {
-										FBL.getTabBrowser().selectedTab = FBL.getTabBrowser().addTab(evt.target.textContent);
-									}
-									else if (regExpFriendlyFireCopyURLClass.test(targetClassName)) {
-										// Copy to clipboard code taken from/inspired by https://developer.mozilla.org/en/Using_the_Clipboard
-										var friendlyFireURL = evt.target.getAttribute("url"),
-											textUnicode = friendlyFireURL,
-											textHtml = ("<a href=\"" + friendlyFireURL + "\">" + friendlyFireURL + "</a>"),
-											str = Components.classes["@mozilla.org/supports-string;1"].												                       createInstance(Components.interfaces.nsISupportsString);  
-										if (!str) {
-											alert("Copying failed");
-											return false;
-										}
-										str.data = textUnicode;
-
-										var htmlstring = Components.classes["@mozilla.org/supports-string;1"].												                       createInstance(Components.interfaces.nsISupportsString);  
-										if (!htmlstring) {
-											alert("Copying failed");
-											return false;
-										}
-										htmlstring.data = textHtml;
-										
-										var trans = Components.classes["@mozilla.org/widget/transferable;1"].createInstance(Components.interfaces.nsITransferable);
-										trans.init(null); 
-										if (!trans) {
-											alert("Copying failed");
-											return false;
-										}
-
-										trans.addDataFlavor("text/unicode");  
-										trans.setTransferData("text/unicode", str, textUnicode.length * 2); // *2 because it's unicode  
-
-										trans.addDataFlavor("text/html");  
-										trans.setTransferData("text/html", htmlstring, textHtml.length * 2); // *2 because it's unicode   
-
-										var clipboard = Components.classes["@mozilla.org/widget/clipboard;1"].												                       getService(Components.interfaces.nsIClipboard);  
-										if (!clipboard) {
-											alert("Copying failed");
-											return false;
-										}
-
-										clipboard.setData(trans, null, Components.interfaces.nsIClipboard.kGlobalClipboard);  
-										return true;
-									}
-									else if (regExpFriendlyFireClass.test(targetClassName)) {
-										matchingElm = state.matchingElements[this.getAttribute("ref")];
-										var matchingElmInList = evt.target,
-											fakeDivForGettingInnerHTML = currentDocument.createElement("div"),
-											nodeCode;
-										fakeDivForGettingInnerHTML.appendChild(matchingElm.cloneNode(true));
-										nodeCode = fakeDivForGettingInnerHTML.innerHTML;
-									
-										var XMLHttp = new XMLHttpRequest(),
-											failedText = "Failed. Click to try again",
-											requestTimer = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);
-										XMLHttp.open("POST", "http://jsbin.com/save", true);
-
-										// These two are vital
-										XMLHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-										XMLHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-										// This line doesn't seem to matter, although it should state number of sent params below in the send method
-										XMLHttp.setRequestHeader("Content-length", 2);
-
-										// This line seems superfluous
-										XMLHttp.setRequestHeader("Connection", "close");
-
-										XMLHttp.onreadystatechange = function () {
-											if (XMLHttp.readyState === 4) {
-												requestTimer.cancel();
-												if (XMLHttp.status === 200) {
-													var response = XMLHttp.responseText + "/edit#html";
-													matchingElmInList.className += " firefinder-friendly-fire-fired";
-													matchingElmInList.innerHTML = '<span class="firefinder-friendly-fire-url">' + response + '</span>(<span class="firefinder-friendly-fire-copy-url" url="' + response + '">' + translations.firefindercopy + '</span>)';
-													if (Firebug.getPref(Firebug.prefDomain, "firefinder.openFriendlyFirePageAutomatically")) {
-														FBL.getTabBrowser().selectedTab = FBL.getTabBrowser().addTab(response);
-													}
-												}
-												else {
-													matchingElmInList.innerHTML = failedText;
-												}
-											}
-										};
-										XMLHttp.onerror = function () {
-											matchingElmInList.innerHTML = failedText;
-										};
-										matchingElmInList.innerHTML = translations.firefindersending + "...";
-										XMLHttp.send("html=" + encodeURIComponent(nodeCode.replace(regExpClass, "").replace(regExpSpaceFix, "").replace(regExpEmptyClass, "")) + "&format=plain");
-										requestTimer.cancel();
-										requestTimer.initWithCallback(function () {
-											XMLHttp.abort();
-											matchingElmInList.innerHTML = translations.firefindertimedout;
-										}, 3000, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
 									}
 									else if (!regExpInnerCodeClass.test(evt.target.className)) {
 										if (regExpCollapsedClass.test(this.className)) {
@@ -495,7 +396,6 @@ FBL.ns(function () {
 				return [
 					this.optionsMenuItem(translations.firefindercollapsematcheslist, "firefinder.collapseMatchesList"),
 					this.optionsMenuItem(translations.firefinderstartautoselect, "firefinder.startAutoSelect"),
-					this.optionsMenuItem(translations.firefinderopenfriendlyfirepageautomatically, "firefinder.openFriendlyFirePageAutomatically"),
 				];
 			},
 			
