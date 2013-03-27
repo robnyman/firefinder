@@ -228,27 +228,27 @@ FBL.ns(function () {
 								nodeNameCode = "<span class='node-name'>" + nodeNameValue + "</span>";
 
 								// Each element match container
-								firefinderElement = document.createElement("div");
+								var firefinderElement = document.createElement("div");
 								firefinderElement.className = "firefinder-result-item" + ((j % 2 === 0)? " odd" : "");
 								firefinderElement.ref = j;
 
 								// Inspect element link
-								firefinderInspectElement = document.createElement("div");
+								var firefinderInspectElement = document.createElement("div");
 								firefinderInspectElement.className = "firefinder-inspect-element";
-								firefinderInspectElementText = document.createTextNode(translations.firefinderinspect);
+								var firefinderInspectElementText = document.createTextNode(translations.firefinderinspect);
 								firefinderInspectElement.appendChild(firefinderInspectElementText);
 								firefinderElement.appendChild(firefinderInspectElement)
 
 								// Element match display
 
 								// Initial bracket
-								initialBracket = document.createTextNode("<");
+								var initialBracket = document.createTextNode("<");
 								firefinderElement.appendChild(initialBracket);
 
 								// Node name presentation
-								nodeNameFormat = document.createElement("span");
+								var nodeNameFormat = document.createElement("span");
 								nodeNameFormat.className = "node-name";
-								nodeNameText = document.createTextNode(nodeNameValue);
+								var nodeNameText = document.createTextNode(nodeNameValue);
 								nodeNameFormat.appendChild(nodeNameText);
 								firefinderElement.appendChild(nodeNameFormat);
 
@@ -257,54 +257,52 @@ FBL.ns(function () {
 									attr = elm.attributes[k];
 
 									// Attribute name + start quote
-									attributeName = document.createTextNode(" " + attr.name + "=\"");
+									var attributeName = document.createTextNode(" " + attr.name + "=\"");
 									firefinderElement.appendChild(attributeName);
 
 									// Attribute value
-									attributeValueElm = document.createElement("span");
+									var attributeValueElm = document.createElement("span");
 									attributeValueElm.className = "attribute-value";
-									attributeValue = document.createTextNode(attr.value);
+									var attributeValue = document.createTextNode(attr.value);
 									attributeValueElm.appendChild(attributeValue);
 									firefinderElement.appendChild(attributeValueElm);
 
 									// Attribute end quote
-									attributeEnd = document.createTextNode("\"");
+									var attributeEnd = document.createTextNode("\"");
 									firefinderElement.appendChild(attributeEnd);
-									//resultItem += " " + attr.name + "=&quot;<span class='attribute-value'>" + attr.value + "</span>&quot;";			
 								}
 
 								// End bracket
-								endBracket = document.createTextNode(">");
+								var endBracket = document.createTextNode(">");
 								firefinderElement.appendChild(endBracket);
 
 								if (elm.textContent.length > 0) {
 									var innerCode = document.createElement("div");
 									innerCode.className = "inner-code-container";
-									innerCodeContent = document.createTextNode(elm.textContent.replace(regExpCharacters, matchReplace));
+									var innerCodeContent = document.createTextNode(elm.textContent.replace(regExpCharacters, matchReplace));
 									innerCode.appendChild(innerCodeContent);
 									firefinderElement.appendChild(innerCode);
-									//resultItem += "<div class='inner-code-container'>" + elm.textContent.replace(regExpCharacters, matchReplace) + "</div>"; 
 								}
 								
 								if (!regExpSingleCloseElements.test(nodeNameValue)) {
 									// End container element
-									nodeNameEndFormat = document.createElement("div");
+									var nodeNameEndFormat = document.createElement("div");
 									nodeNameEndFormat.className = "end-tag";
 									firefinderElement.appendChild(nodeNameEndFormat);
 
 									// Initial end bracket
-									initialEndTagBracket = document.createTextNode("</");
+									var initialEndTagBracket = document.createTextNode("</");
 									nodeNameEndFormat.appendChild(initialEndTagBracket);
 
 									// Node name end format
-									nodeNameEndingFormat = document.createElement("span");
+									var nodeNameEndingFormat = document.createElement("span");
 									nodeNameEndingFormat.className = "node-name";
-									nodeNameEndText = document.createTextNode(nodeNameValue);
+									var nodeNameEndText = document.createTextNode(nodeNameValue);
 									nodeNameEndingFormat.appendChild(nodeNameEndText);
 									nodeNameEndFormat.appendChild(nodeNameEndingFormat);
 
 									// Ending end bracket
-									endingEndTagBracket = document.createTextNode(">");
+									var endingEndTagBracket = document.createTextNode(">");
 									nodeNameEndFormat.appendChild(endingEndTagBracket);
 								}
 								results.appendChild(firefinderElement);
