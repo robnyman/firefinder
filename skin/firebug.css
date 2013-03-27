@@ -83,6 +83,7 @@
 }
 
 .firefinder-results .firefinder-result-item .inner-code-container {
+	display: block;
 	cursor: auto;
 	padding-left: 10px;
 }
