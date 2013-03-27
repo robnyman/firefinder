@@ -216,50 +216,107 @@ FBL.ns(function () {
 						else {
 							matchingElements = new XPCNativeWrapper(Firebug.currentContext.window).document.querySelectorAll(filterExpression.replace(regExpSlashEscape, "\\\/"));
 						}
+
+						// Clear results content
+						results.innerHTML = "";
 						
 						// Add class to matching elements and clone them to the results container
 						if (matchingElements.length > 0) {
-							for (var j=0, jl=matchingElements.length, elm, nodeNameValue, nodeNameCode, k, kl, secElm, attr; j<jl; j++) {
+							for (var j=0, jl=matchingElements.length, elm, nodeNameValue, nodeNameCode, k, kl, attr; j<jl; j++) {
 								elm = matchingElements[j];
 								nodeNameValue = elm.nodeName.toLowerCase();
 								nodeNameCode = "<span class='node-name'>" + nodeNameValue + "</span>";
-								
-								resultItem += "<div class='firefinder-result-item" + ((j % 2 === 0)? " odd" : "") + "'";
-								resultItem += " ref='" + j + "'>";
-								resultItem += "<div class='firefinder-inspect-element'>" + translations.firefinderinspect + "</div>";
-								resultItem += "&lt" + nodeNameCode;
-								secElm = document.createElement("div");
+
+								// Each element match container
+								firefinderElement = document.createElement("div");
+								firefinderElement.className = "firefinder-result-item" + ((j % 2 === 0)? " odd" : "");
+								firefinderElement.ref = j;
+
+								// Inspect element link
+								firefinderInspectElement = document.createElement("div");
+								firefinderInspectElement.className = "firefinder-inspect-element";
+								firefinderInspectElementText = document.createTextNode(translations.firefinderinspect);
+								firefinderInspectElement.appendChild(firefinderInspectElementText);
+								firefinderElement.appendChild(firefinderInspectElement)
+
+								// Element match display
+
+								// Initial bracket
+								initialBracket = document.createTextNode("<");
+								firefinderElement.appendChild(initialBracket);
+
+								// Node name presentation
+								nodeNameFormat = document.createElement("span");
+								nodeNameFormat.className = "node-name";
+								nodeNameText = document.createTextNode(nodeNameValue);
+								nodeNameFormat.appendChild(nodeNameText);
+								firefinderElement.appendChild(nodeNameFormat);
+
+								// Adding attributes for each matching element								
 								for (k=0, kl=elm.attributes.length; k<kl; k++) {
 									attr = elm.attributes[k];
-									try	{
-										secElm.setAttribute(attr.name, attr.value);
-										resultItem += " " + attr.name + "=&quot;<span class='attribute-value'>" + secElm.getAttribute(attr.name) + "</span>&quot;";
-									}
-									catch (e) {
-									}	
-								};
-								resultItem += "&gt;";
-								
+
+									// Attribute name + start quote
+									attributeName = document.createTextNode(" " + attr.name + "=\"");
+									firefinderElement.appendChild(attributeName);
+
+									// Attribute value
+									attributeValueElm = document.createElement("span");
+									attributeValueElm.className = "attribute-value";
+									attributeValue = document.createTextNode(attr.value);
+									attributeValueElm.appendChild(attributeValue);
+									firefinderElement.appendChild(attributeValueElm);
+
+									// Attribute end quote
+									attributeEnd = document.createTextNode("\"");
+									firefinderElement.appendChild(attributeEnd);
+									//resultItem += " " + attr.name + "=&quot;<span class='attribute-value'>" + attr.value + "</span>&quot;";			
+								}
+
+								// End bracket
+								endBracket = document.createTextNode(">");
+								firefinderElement.appendChild(endBracket);
+
 								if (elm.textContent.length > 0) {
-									secElm.textContent = elm.textContent;
-									resultItem += "<div class='inner-code-container'>" + secElm.textContent.replace(regExpCharacters, matchReplace) + "</div>";
+									var innerCode = document.createElement("div");
+									innerCode.className = "inner-code-container";
+									innerCodeContent = document.createTextNode(elm.textContent.replace(regExpCharacters, matchReplace));
+									innerCode.appendChild(innerCodeContent);
+									firefinderElement.appendChild(innerCode);
+									//resultItem += "<div class='inner-code-container'>" + elm.textContent.replace(regExpCharacters, matchReplace) + "</div>"; 
 								}
-								if (!regExpSingleCloseElements.test(nodeNameValue)) {
-									resultItem += "<div class='end-tag'>&lt;/" + nodeNameCode + "&gt;</div>";
-								}
-								resultItem += "</div>";
 								
+								if (!regExpSingleCloseElements.test(nodeNameValue)) {
+									// End container element
+									nodeNameEndFormat = document.createElement("div");
+									nodeNameEndFormat.className = "end-tag";
+									firefinderElement.appendChild(nodeNameEndFormat);
+
+									// Initial end bracket
+									initialEndTagBracket = document.createTextNode("</");
+									nodeNameEndFormat.appendChild(initialEndTagBracket);
+
+									// Node name end format
+									nodeNameEndingFormat = document.createElement("span");
+									nodeNameEndingFormat.className = "node-name";
+									nodeNameEndText = document.createTextNode(nodeNameValue);
+									nodeNameEndingFormat.appendChild(nodeNameEndText);
+									nodeNameEndFormat.appendChild(nodeNameEndingFormat);
+
+									// Ending end bracket
+									endingEndTagBracket = document.createTextNode(">");
+									nodeNameEndFormat.appendChild(endingEndTagBracket);
+								}
+								results.appendChild(firefinderElement);
 								elm.className += ((elm.className.length > 0)? " " : "") + "firefinder-match";
 							}
 						}
 						else {
-							resultItem = translations.firefindernomatches;
+							var noMatches = document.createTextNode(translations.firefindernomatches);
+							results.appendChild(noMatches);
 						}
 						
 						state.matchingElements = matchingElements;
-						
-						// Set results content
-						results.innerHTML = resultItem;
 						
 						firefinderResultItems = dLite.elmsByClass("firefinder-result-item", "div", results);
 						for (var l=0, ll=firefinderResultItems.length, matchingElm; l<ll; l++) {
