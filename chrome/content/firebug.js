@@ -432,10 +432,12 @@ FBL.ns(function () {
 				// Clear previosuly matched elements' CSS classes	
 				for (var i=0, il=matchingElements.length, elm; i<il; i++) {
 					elm = matchingElements[i];
-					elm.className = elm.className.replace(regExpClass, "").replace(regExpSpaceFix, "");
-					if (elm.className.length === 0) {
-						elm.removeAttribute("class");
-					}
+					try {
+						elm.className = elm.className.replace(regExpClass, "").replace(regExpSpaceFix, "");
+						if (elm.className.length === 0) {
+							elm.removeAttribute("class");
+						}
+					} catch(e) {}
 				}				
 				return state;		
 			}
