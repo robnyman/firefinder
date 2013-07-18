@@ -80,7 +80,7 @@ FBL.ns(function () {
 			baseContentAdded : false,
 		    showPanel : function(browser, panel) {
 				var isPanel = panel && panel.name === panelName, 
-					firefinderButtons = browser.chrome.$("fbfirefinderButtons"),
+					firefinderButtons = Firebug.chrome.$("fbfirefinderButtons"),
 					state = getFirefinderState(),
 					startAutoSelect = Firebug.getPref(Firebug.prefDomain, "firefinder.startAutoSelect"),
 					firefinderAutoSelectButton = document.getElementById("firefinderAutoSelectButton");
